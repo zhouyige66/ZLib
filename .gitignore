@@ -10,6 +10,6 @@ gradlew
 gradlew.bat
 
 # 忽略模块
-module_common
 app
+module_common
 
