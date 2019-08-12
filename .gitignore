@@ -2,9 +2,14 @@
 .gradle
 .idea
 .DS_Store
-build
+build/
 captures
 .externalNativeBuild
 local.properties
+gradlew
+gradlew.bat
+
+# 忽略模块
 module_common
 app
+
