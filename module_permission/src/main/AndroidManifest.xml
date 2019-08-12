@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cn.roy.zlib.permission">
+
+    <application>
+        <activity android:name="cn.roy.zlib.permission.PermissionGrantActivity" />
+    </application>
+
+</manifest>

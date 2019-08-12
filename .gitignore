@@ -2,10 +2,9 @@
 .gradle
 .idea
 .DS_Store
-/build
-/captures
+build
+captures
 .externalNativeBuild
-/local.properties
+local.properties
 module_common
 app
-

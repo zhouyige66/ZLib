@@ -1,0 +1,52 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.4.2'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+// 统一配置
+ext {
+    // android配置项
+    compileSdkVersion = 28
+    buildToolsVersion = '29.0.0'
+    minSdkVersion = 14
+    targetSdkVersion = 28
+    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    // dependencies配置项
+    androidx_appcompat = 'androidx.appcompat:appcompat:1.0.2'
+    junit = 'junit:junit:4.12'
+    androidx_test = 'androidx.test:runner:1.2.0'
+    androidx_test_espresso = 'androidx.test.espresso:espresso-core:3.2.0'
+
+    // 配置服务器访问地址（0开发地址，1测试地址，2预发布地址，3正式环境地址）
+    apiFlag = 3
+
+    // 发布版本相关
+    versionNamePrefix = ["_alpha", "_beta", "_pre", "_release"]
+    versionReleaseDate = new Date().format("yyyyMMdd", TimeZone.getTimeZone("UTC"))
+    versionCode = 100
+    versionName = "V1.0.0." + versionReleaseDate + versionNamePrefix[apiFlag]
+}
