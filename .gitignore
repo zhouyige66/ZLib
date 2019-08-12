@@ -1,13 +1,14 @@
+.DS_Store
+
 *.iml
 .gradle
 .idea
-.DS_Store
 build/
-captures
+captures/
 .externalNativeBuild
-local.properties
-gradlew
-gradlew.bat
+/local.properties
+/gradlew
+/gradlew.bat
 
 # 忽略模块
 app
