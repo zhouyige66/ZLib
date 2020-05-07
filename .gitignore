@@ -7,8 +7,6 @@ build/
 captures/
 .externalNativeBuild
 /local.properties
-/gradlew
-/gradlew.bat
 
 # 忽略模块
 app
