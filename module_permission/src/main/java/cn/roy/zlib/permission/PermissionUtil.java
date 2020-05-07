@@ -60,14 +60,16 @@ public class PermissionUtil {
      * @return true-未授权，false-已授权
      */
     public static boolean lacksPermission(@NonNull Context context, @NonNull String permission) {
-        // 1.Context.checkSelfPermission(String permission)
-        // 2.ContextCompat.checkSelfPermission(String permission)
-        //   2.1 调用Context.checkPermission(@NonNull String permission, int pid, int uid)
-        //   2.2 targetSDKVersion<23时，不起作用
-        // 3.PackageManager.checkPermission(String permName, String pkgName)
-        // 4.AppOpsManager.permissionToOp(permission)要求VERSION>=23
-        // 5.PermissionChecker.checkSelfPermission(@NonNull Context context,@NonNull String permission)
-        //   5.1 targetSDKVersion>=23时无效，小于23时，直接返回true，检测结果不准确
+        /**
+         * 1.Context.checkSelfPermission(String permission)
+         * 2.ContextCompat.checkSelfPermission(String permission)
+         *   2.1 调用Context.checkPermission(@NonNull String permission, int pid, int uid)
+         *   2.2 targetSDKVersion<23时，不起作用
+         * 3.PackageManager.checkPermission(String permName, String pkgName)
+         * 4.AppOpsManager.permissionToOp(permission)，要求VERSION>=23
+         * 5.PermissionChecker.checkSelfPermission(@NonNull Context context,@NonNull String permission)
+         *   5.1 targetSDKVersion>=23时无效，小于23时，直接返回true，检测结果不准确
+         */
         boolean result;
 
         // 以23版本为界（Build.VERSION_CODES.M）

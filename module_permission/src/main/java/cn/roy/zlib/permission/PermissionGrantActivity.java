@@ -32,10 +32,13 @@ public class PermissionGrantActivity extends AppCompatActivity {
     /**
      * 请求权限传递参数key
      */
-    public static final String EXTRA_PERMISSIONS = "permission.extra_permission"; // 权限参数
-    public static final int CODE_PERMISSION_GRANT_REQUEST = 10000; // 系统权限管理页面请求code
-    private static final int PERMISSION_REQUEST_CODE = 0; // 系统权限管理页面请求code
-    private static final String PACKAGE_URL_SCHEME = "package:"; // 方案
+    public static final String EXTRA_PERMISSIONS = "permission.extra_permission";
+    // 系统权限管理页面请求code
+    private static final int PERMISSION_REQUEST_CODE = 0;
+    // 系统权限管理页面请求code
+    public static final int CODE_PERMISSION_GRANT_REQUEST = 10000;
+    // 方案
+    private static final String PACKAGE_URL_SCHEME = "package:";
 
     private boolean isRequireCheck; // 是否需要系统权限检测
 
