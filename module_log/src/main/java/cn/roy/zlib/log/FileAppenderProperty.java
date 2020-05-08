@@ -10,18 +10,19 @@ import ch.qos.logback.classic.Level;
  * @Date: 2019-08-07 14:52
  * @Version: v1.0
  */
-public class LogbackConfigProperty {
-    public static String PATTERN_DEFAULT = "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n";
+public class FileAppenderProperty {
+    public static String PATTERN_DEFAULT =
+            "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n";
+
     private final Level level;// 日志级别
     private final String encoderPattern;// 日志输出样式
-    // 以下属性适用于日志存储到文件
     private final String logFilePath;// 日志文件路径
     private final String logFileNamePattern;// 日志存档路径Pattern
     private final long singleFileSize;// 单个文件大小
     private final long totalFileSize;// 总文件的大小
     private final int maxHistory;// 存档文件最大数量
 
-    private LogbackConfigProperty(Builder builder) {
+    private FileAppenderProperty(Builder builder) {
         this.level = builder.level;
         this.encoderPattern = builder.encoderPattern;
         this.logFilePath = builder.logFilePath;
@@ -60,10 +61,8 @@ public class LogbackConfigProperty {
     }
 
     public static class Builder {
-        // 日志输出样式
         private final Level level;// 日志级别
-        private String encoderPattern = PATTERN_DEFAULT;
-        // 以下属性适用于日志存储到文件
+        private String encoderPattern = PATTERN_DEFAULT;// 日志输出样式
         private String logFilePath;// 日志文件路径
         private String logFileNamePattern;// 日志存档路径Pattern
         private long singleFileSize = -1;// 单个文件大小
@@ -104,7 +103,7 @@ public class LogbackConfigProperty {
             return this;
         }
 
-        public LogbackConfigProperty build() {
+        public FileAppenderProperty build() {
             // 统一处理默认值
             if (totalFileSize == -1) {
                 long internalTotalSize = AndroidStorageUtil.getInternalTotalSize();
@@ -118,16 +117,18 @@ public class LogbackConfigProperty {
                 singleFileSize = 1024 * 1024 * 10;
             }
             if (maxHistory == -1) {
-                maxHistory = 5;
+                maxHistory = 7;
             }
 
             if (TextUtils.isEmpty(logFilePath)) {
                 throw new RuntimeException("日志保存地址为空");
             }
             if (TextUtils.isEmpty(logFileNamePattern)) {
-                throw new RuntimeException("日志存档路径Pattern，请参照\"https://logback.qos.ch/manual/appenders.html#SizeAndTimeBasedFNATP\"");
+                throw new RuntimeException("日志存档路径Pattern，" +
+                        "请参照\"https://logback.qos.ch/manual/appenders.html#SizeAndTimeBasedFNATP\"或\"www.logback.cn\"");
             }
-            return new LogbackConfigProperty(this);
+
+            return new FileAppenderProperty(this);
         }
     }
 

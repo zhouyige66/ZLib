@@ -75,7 +75,7 @@ public class PermissionUtil {
         // 以23版本为界（Build.VERSION_CODES.M）
         int targetSDKVersion = getTargetSDKVersion(context);
         int sdkInt = Build.VERSION.SDK_INT;
-        if (sdkInt >= 23) {
+        if (sdkInt >= 23) {// Android 6.0及以上
             if (targetSDKVersion >= 23) {// 动态授权，检测方案不同
                 result = context.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED;
             } else {// 使用兼容类PermissionChecker
@@ -85,9 +85,10 @@ public class PermissionUtil {
         } else {
             // 检测结果不准确，有可能被应用管家之类的关闭了，最好是try catch处理一下
             result = ContextCompat.checkSelfPermission(context, permission) ==
-                    PermissionChecker.PERMISSION_DENIED;
+                    PackageManager.PERMISSION_DENIED;
         }
 
         return result;
     }
+
 }

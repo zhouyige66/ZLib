@@ -31,6 +31,6 @@ dependencies {
     androidTestImplementation rootProject.androidx_test_espresso
 
     implementation rootProject.androidx_appcompat
-    implementation 'org.slf4j:slf4j-api:1.7.25'
-    implementation 'com.github.tony19:logback-android:2.0.0'
+    api 'org.slf4j:slf4j-api:1.7.25'
+    api 'com.github.tony19:logback-android:2.0.0'
 }

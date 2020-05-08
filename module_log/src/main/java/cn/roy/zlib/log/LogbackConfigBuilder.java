@@ -6,8 +6,6 @@ import android.text.TextUtils;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -15,12 +13,6 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.android.LogcatAppender;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.filter.LevelFilter;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.FileAppender;
-import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
-import ch.qos.logback.core.spi.FilterReply;
-import ch.qos.logback.core.util.FileSize;
 
 /**
  * @Description: Logback配置器
@@ -29,57 +21,65 @@ import ch.qos.logback.core.util.FileSize;
  * @Version: v1.0
  */
 public class LogbackConfigBuilder {
-    private final LoggerContext loggerContext;
     private Context context;
-    private Level rootLevel;
-    private boolean isCustom = false;
+    private LoggerContext loggerContext;
+    private Logger rootLogger;
+    private Level rootLevel = Level.DEBUG;
     // logcat配置
     private Level logcatLevel;
     private String logcatEncodePattern;
     // 日志存储单个文件配置
-    private LogbackConfigProperty singleFileAppenderProp;
-    // 日志分Level独立存储配置
-    private Map<String, LogbackConfigProperty> multiFileAppenderProps;
+    private LogbackConfigSingleFileBuilder singleFileBuilder;
+    private LogbackConfigMultipleFileBuilder multipleFileBuilder;
 
-    public LogbackConfigBuilder(Context context, Level rootLevel) {
+    public LogbackConfigBuilder(Context context) {
         this.context = context;
-        this.rootLevel = rootLevel;
+        this.loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        this.rootLogger = (ch.qos.logback.classic.Logger)
+                LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    }
 
-        loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+    public Logger getRootLogger() {
+        return rootLogger;
+    }
+
+    public LoggerContext getLoggerContext() {
+        return loggerContext;
+    }
+
+    public LogbackConfigBuilder setRootLevel(Level rootLevel) {
+        this.rootLevel = rootLevel;
+        return this;
     }
 
     public LogbackConfigBuilder setLogcatAppenderProp(Level logcatLevel, String encodePattern) {
-        this.isCustom = true;
         this.logcatLevel = logcatLevel;
         this.logcatEncodePattern = encodePattern;
         return this;
     }
 
-    public LogbackConfigBuilder setSingleFileAppenderProp(LogbackConfigProperty prop) {
-        this.isCustom = true;
-        this.singleFileAppenderProp = prop;
-        return this;
+    public LogbackConfigSingleFileBuilder setSingleFileAppenderProp(FileAppenderProperty prop) {
+        if (singleFileBuilder == null) {
+            singleFileBuilder = new LogbackConfigSingleFileBuilder();
+            singleFileBuilder.setBuilder(this);
+        }
+        singleFileBuilder.setFileAppenderProp(prop);
+        return singleFileBuilder;
     }
 
-    public LogbackConfigBuilder addFileAppenderProp(LogbackConfigProperty prop) {
-        this.isCustom = true;
-        if (multiFileAppenderProps == null) {
-            multiFileAppenderProps = new HashMap<>();
+    public LogbackConfigMultipleFileBuilder addFileAppenderProp(FileAppenderProperty prop) {
+        if (multipleFileBuilder == null) {
+            multipleFileBuilder = new LogbackConfigMultipleFileBuilder();
+            multipleFileBuilder.setBuilder(this);
         }
-        multiFileAppenderProps.put(prop.getLevel().levelStr, prop);
-        return this;
+        multipleFileBuilder.addFileAppenderProp(prop);
+        return multipleFileBuilder;
     }
 
     public void build() {
         loggerContext.stop();
-        Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         rootLogger.setLevel(rootLevel);
 
-        // 创建默认
-        if (!isCustom) {
-            createDefaultProp();
-        }
-        // 创建用户自定义的
         if (logcatLevel != null) {
             // 输出格式
             PatternLayoutEncoder encoder = new PatternLayoutEncoder();
@@ -104,43 +104,39 @@ public class LogbackConfigBuilder {
 
             rootLogger.addAppender(logcatAppender);
         }
-        // 单文件优先
-        if (singleFileAppenderProp != null) {
-            rootLogger.addAppender(createFileAppender(singleFileAppenderProp, true));
-            return;
-        }
-        // 日志文件分类
-        if (!multiFileAppenderProps.isEmpty()) {
-            for (LogbackConfigProperty prop : multiFileAppenderProps.values()) {
-                rootLogger.addAppender(createFileAppender(prop, false));
-            }
-        }
     }
 
-    private void createDefaultProp() {
+    public void buildDefault() {
         String storagePath = AndroidStorageUtil.getStoragePath();
-        if(!storagePath.endsWith("/")){
+        if (!storagePath.endsWith("/")) {
             storagePath = storagePath.concat(File.separator);
         }
         // 日志文件夹
-        String packageName  = context.getPackageName();
+        String packageName = context.getPackageName();
         String logFilePath = storagePath.concat(packageName).concat(File.separator).concat("log");
         String logFileName = logFilePath + File.separator + "%s.txt";
         String fileNamePattern = logFilePath + File.separator + "%s.%d{yyyy-MM-dd}.%i.txt";
 
-        LogbackConfigProperty debugProp = create(Level.DEBUG, logFileName, fileNamePattern);
-        LogbackConfigProperty infoProp = create(Level.INFO, logFileName, fileNamePattern);
-        LogbackConfigProperty warnProp = create(Level.WARN, logFileName, fileNamePattern);
-        LogbackConfigProperty errorProp = create(Level.ERROR, logFileName, fileNamePattern);
-        setLogcatAppenderProp(Level.DEBUG, LogbackConfigProperty.PATTERN_DEFAULT);
-        addFileAppenderProp(debugProp);
-        addFileAppenderProp(infoProp);
-        addFileAppenderProp(warnProp);
-        addFileAppenderProp(errorProp);
+        FileAppenderProperty debugProp = create(Level.DEBUG, logFileName, fileNamePattern);
+        FileAppenderProperty infoProp = create(Level.INFO, logFileName, fileNamePattern);
+        FileAppenderProperty warnProp = create(Level.WARN, logFileName, fileNamePattern);
+        FileAppenderProperty errorProp = create(Level.ERROR, logFileName, fileNamePattern);
+
+        setLogcatAppenderProp(Level.DEBUG, FileAppenderProperty.PATTERN_DEFAULT);
+        build();
+
+        rootLogger.addAppender(FileAppenderFactory.createFileAppender(loggerContext, debugProp,
+                false));
+        rootLogger.addAppender(FileAppenderFactory.createFileAppender(loggerContext, infoProp,
+                false));
+        rootLogger.addAppender(FileAppenderFactory.createFileAppender(loggerContext, warnProp,
+                false));
+        rootLogger.addAppender(FileAppenderFactory.createFileAppender(loggerContext, errorProp,
+                false));
     }
 
-    private LogbackConfigProperty create(Level level, String logFileName,
-                                         String fileNamePattern) {
+    private FileAppenderProperty create(Level level, String logFileName,
+                                        String fileNamePattern) {
         String logNamePrefix = level.levelStr.toLowerCase();
         String logFilePath = String.format(logFileName, logNamePrefix);
         String rollingFileNamePattern = fileNamePattern.replace("%s", logNamePrefix);
@@ -153,9 +149,9 @@ public class LogbackConfigBuilder {
         long totalFileSize = max / 20;
         // 单个文件最大10M
         long singleFileSize = 1024 * 1024 * 10;
-        // 默认保存最大天数为5
-        int maxHistory = 5;
-        LogbackConfigProperty prop = new LogbackConfigProperty.Builder(level)
+        // 默认保存最大天数为7
+        int maxHistory = 7;
+        FileAppenderProperty prop = new FileAppenderProperty.Builder(level)
                 .setLogFilePath(logFilePath)
                 .setLogFileNamePattern(rollingFileNamePattern)
                 .setSingleFileSize(singleFileSize)
@@ -164,51 +160,6 @@ public class LogbackConfigBuilder {
                 .build();
 
         return prop;
-    }
-
-    private FileAppender<ILoggingEvent> createFileAppender(LogbackConfigProperty prop,
-                                                           boolean isSingleModel) {
-        Level level = prop.getLevel();
-
-        // 格式
-        PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-        encoder.setContext(loggerContext);
-        encoder.setPattern(prop.getEncoderPattern());
-        encoder.start();
-        // 过滤器
-        LevelFilter filter = new LevelFilter();
-        filter.setContext(loggerContext);
-        filter.setLevel(level);
-        if (!isSingleModel) {
-            filter.setOnMatch(FilterReply.ACCEPT);
-            filter.setOnMismatch(FilterReply.DENY);
-        }
-        filter.start();
-        // appender
-        RollingFileAppender<ILoggingEvent> fileAppender = new RollingFileAppender<>();
-        fileAppender.setContext(loggerContext);
-        fileAppender.setEncoder(encoder);
-        fileAppender.setName(level.levelStr);
-        fileAppender.setFile(prop.getLogFilePath());
-        fileAppender.addFilter(filter);
-        fileAppender.setPrudent(false);
-        fileAppender.setAppend(true);
-        // 策略
-        SizeAndTimeBasedRollingPolicy<ILoggingEvent> rollingPolicy = new SizeAndTimeBasedRollingPolicy<>();
-        rollingPolicy.setContext(loggerContext);
-        rollingPolicy.setFileNamePattern(prop.getLogFileNamePattern());
-        String maxFileSize = FileSizeConversionUtil.getFileSizeWithInteger(prop.getSingleFileSize());
-        String totalSize = FileSizeConversionUtil.getFileSizeWithInteger(prop.getTotalFileSize());
-        int maxHistory = prop.getMaxHistory();
-        rollingPolicy.setMaxFileSize(FileSize.valueOf(maxFileSize));
-        rollingPolicy.setTotalSizeCap(FileSize.valueOf(totalSize));
-        rollingPolicy.setMaxHistory(maxHistory);
-        rollingPolicy.setParent(fileAppender);
-        rollingPolicy.start();
-        fileAppender.setRollingPolicy(rollingPolicy);
-        fileAppender.start();
-
-        return fileAppender;
     }
 
 }
