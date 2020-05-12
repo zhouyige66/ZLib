@@ -32,9 +32,32 @@ public class HttpClientBuilder {
     }
 
     public HttpRequestClient buildClient(Class<? extends HttpRequestClient> clazz) {
-
-
-        return null;
+        if (clazz == RetrofitHttpClient.class) {
+            RetrofitHttpClient retrofitHttpClient = new RetrofitHttpClient();
+            retrofitHttpClient.config(this.baseParam);
+            retrofitHttpClient.setHttpRequestLogger(this.logger);
+            retrofitHttpClient.setHttpResponsePretreatment(httpResponsePretreatment);
+            return retrofitHttpClient;
+        } else if (clazz == XUtilsHttpClient.class) {
+            XUtilsHttpClient xUtilsHttpClient = new XUtilsHttpClient();
+            xUtilsHttpClient.config(this.baseParam);
+            xUtilsHttpClient.setHttpRequestLogger(this.logger);
+            xUtilsHttpClient.setHttpResponsePretreatment(httpResponsePretreatment);
+            return xUtilsHttpClient;
+        } else {
+            try {
+                HttpRequestClient httpRequestClient = clazz.newInstance();
+                httpRequestClient.config(this.baseParam);
+                httpRequestClient.setHttpRequestLogger(this.logger);
+                httpRequestClient.setHttpResponsePretreatment(this.httpResponsePretreatment);
+                return httpRequestClient;
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 
 }

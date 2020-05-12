@@ -1,2 +1,2 @@
-include ':module_http', ':module_log', ':module_permission'
+include ':module_http', ':module_log', ':module_permission', ':module_monitor'
 
