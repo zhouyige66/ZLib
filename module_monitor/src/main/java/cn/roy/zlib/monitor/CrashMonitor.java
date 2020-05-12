@@ -5,7 +5,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
-import android.os.Environment;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +21,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import cn.roy.zlib.log.AndroidStorageUtil;
 
 /**
  * @Description 自定义异常处理
@@ -43,6 +44,7 @@ public class CrashMonitor implements UncaughtExceptionHandler {
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
             Locale.getDefault());
     private HandleException handleException = null;
+    private String logPath;
 
     /**
      * 保证只有一个CrashHandler实例
@@ -90,6 +92,7 @@ public class CrashMonitor implements UncaughtExceptionHandler {
         saveCrashInfo2File(ex);
         if (handleException != null) {
             handleException.handleException(ex);
+            System.exit(0);
         }
 
         return true;
@@ -147,13 +150,16 @@ public class CrashMonitor implements UncaughtExceptionHandler {
         try {
             String time = formatter.format(new Date());
             String fileName = "crash-" + time + ".log";
-            String path = Environment.getDataDirectory().getAbsolutePath()
-                    + File.separator + "crash"
-                    + File.separator;
+            logPath = logPath == null ? AndroidStorageUtil.getStoragePath() + File.separator
+                    + mContext.getPackageName() : logPath;
+            String path = logPath.endsWith("/") ? logPath : (logPath.concat("/"))
+                    + "crash" + File.separator;
             File dir = new File(path);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
+            File file = new File(path + fileName);
+            file.createNewFile();
             FileOutputStream fos = new FileOutputStream(path + fileName);
             fos.write(sb.toString().getBytes());
             fos.close();
@@ -184,6 +190,10 @@ public class CrashMonitor implements UncaughtExceptionHandler {
      */
     public void setHandleException(HandleException handleException) {
         this.handleException = handleException;
+    }
+
+    public void setLogPath(String logPath) {
+        this.logPath = logPath;
     }
 
     public interface HandleException {

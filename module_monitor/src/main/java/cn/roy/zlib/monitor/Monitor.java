@@ -39,7 +39,8 @@ public class Monitor {
 
     public  void init() {
         // 在主进程初始化调用哈
-        BlockCanary.install(context, new AppBlockCanaryContext(blockMonitorTimeout)).start();
+        BlockCanary.install(context,
+                new AppBlockCanaryContext(blockMonitorTimeout,null)).start();
         // 记录崩溃日志
         CrashMonitor.getInstance().init(context.getApplicationContext());
     }

@@ -9,6 +9,8 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+import cn.roy.zlib.log.AndroidStorageUtil;
+
 /**
  * @Description:
  * @Author: Roy Z
@@ -18,9 +20,11 @@ import java.util.List;
 public class AppBlockCanaryContext extends BlockCanaryContext {
     // 实现各种上下文，包括应用标示符，用户uid，网络类型，卡慢判断阙值，Log保存位置等
     private int blockTimeout = 1000;
+    private String blockLogPath;
 
-    public AppBlockCanaryContext(int blockTimeout) {
+    public AppBlockCanaryContext(int blockTimeout, String blockLogPath) {
         this.blockTimeout = blockTimeout;
+        this.blockLogPath = blockLogPath;
     }
 
     /**
@@ -90,7 +94,11 @@ public class AppBlockCanaryContext extends BlockCanaryContext {
      * @return path of log files
      */
     public String providePath() {
-        return "/blockcanary/";
+        if (blockLogPath == null) {
+            return AndroidStorageUtil.getStoragePath() + File.separator + "block" + File.separator;
+        } else {
+            return blockLogPath;
+        }
     }
 
     /**
