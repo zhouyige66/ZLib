@@ -31,10 +31,10 @@ dependencies {
     androidTestImplementation rootProject.androidx_test_espresso
 
     implementation rootProject.androidx_appcompat
+    api project(path: ':module_log')
     // 内存泄漏监控
     debugApi 'com.squareup.leakcanary:leakcanary-android:2.3'
     // 仅在debug包启用BlockCanary进行卡顿监控和提示的话，可以这么用
     debugApi 'com.github.markzhai:blockcanary-android:1.5.0'
     releaseApi 'com.github.markzhai:blockcanary-no-op:1.5.0'
-    implementation project(path: ':module_log')
 }
