@@ -32,9 +32,9 @@ dependencies {
 
     implementation rootProject.androidx_appcompat
     // 内存泄漏监控
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.3'
+    debugApi 'com.squareup.leakcanary:leakcanary-android:2.3'
     // 仅在debug包启用BlockCanary进行卡顿监控和提示的话，可以这么用
-    debugImplementation'com.github.markzhai:blockcanary-android:1.5.0'
-    releaseImplementation 'com.github.markzhai:blockcanary-no-op:1.5.0'
+    debugApi 'com.github.markzhai:blockcanary-android:1.5.0'
+    releaseApi 'com.github.markzhai:blockcanary-no-op:1.5.0'
     implementation project(path: ':module_log')
 }
