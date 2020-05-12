@@ -17,6 +17,11 @@ import java.util.List;
  */
 public class AppBlockCanaryContext extends BlockCanaryContext {
     // 实现各种上下文，包括应用标示符，用户uid，网络类型，卡慢判断阙值，Log保存位置等
+    private int blockTimeout = 1000;
+
+    public AppBlockCanaryContext(int blockTimeout) {
+        this.blockTimeout = blockTimeout;
+    }
 
     /**
      * Implement in your project.
@@ -62,7 +67,7 @@ public class AppBlockCanaryContext extends BlockCanaryContext {
      * @return threshold in mills
      */
     public int provideBlockThreshold() {
-        return 1000;
+        return blockTimeout < 0 ? 1000 : blockTimeout;
     }
 
     /**
@@ -163,4 +168,5 @@ public class AppBlockCanaryContext extends BlockCanaryContext {
     public void onBlock(Context context, BlockInfo blockInfo) {
 
     }
+
 }
