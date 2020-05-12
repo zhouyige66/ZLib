@@ -34,9 +34,13 @@ dependencies {
     // retrofit
     api 'com.squareup.retrofit2:retrofit:2.6.1'
     api 'com.squareup.retrofit2:adapter-rxjava2:2.6.1'
+    api 'com.squareup.retrofit2:converter-gson:2.6.1'
+    api 'com.squareup.okhttp3:logging-interceptor:3.5.0'
     // rxjava
     api "io.reactivex.rxjava2:rxjava:2.2.6"
     api 'io.reactivex.rxjava2:rxandroid:2.1.1'
     // fastjson
     api 'com.alibaba:fastjson:1.2.58'
+    // xUtils
+    api 'org.xutils:xutils:3.8.8'
 }

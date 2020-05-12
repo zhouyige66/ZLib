@@ -1,7 +1,8 @@
-package cn.roy.zlib.http;
+package cn.roy.zlib.http.sample;
 
 import com.alibaba.fastjson.JSONObject;
 
+import cn.roy.zlib.http.exception.ResponseException;
 import io.reactivex.functions.Function;
 
 /**
@@ -10,7 +11,7 @@ import io.reactivex.functions.Function;
  * @Date: 2019-08-02 17:01
  * @Version: v1.0
  */
-public class ServerResponsePretreatment implements Function<JSONObject, JSONObject> {
+public class ResponsePretreatmentSample implements Function<JSONObject, JSONObject> {
 
     @Override
     public JSONObject apply(JSONObject jsonObject) throws Exception {
@@ -24,7 +25,7 @@ public class ServerResponsePretreatment implements Function<JSONObject, JSONObje
                 return data;
             }
         } else {
-            throw new HttpResponseException(jsonObject.getIntValue("code"),
+            throw new ResponseException(jsonObject.getIntValue("code"),
                     jsonObject.getString("msg"));
         }
     }
