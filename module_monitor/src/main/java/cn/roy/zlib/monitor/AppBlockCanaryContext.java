@@ -1,6 +1,7 @@
 package cn.roy.zlib.monitor;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.github.moduth.blockcanary.BlockCanaryContext;
 import com.github.moduth.blockcanary.internal.BlockInfo;
@@ -8,8 +9,6 @@ import com.github.moduth.blockcanary.internal.BlockInfo;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-
-import cn.roy.zlib.log.AndroidStorageUtil;
 
 /**
  * @Description:
@@ -22,9 +21,15 @@ public class AppBlockCanaryContext extends BlockCanaryContext {
     private int blockTimeout = 1000;
     private String blockLogPath;
 
-    public AppBlockCanaryContext(int blockTimeout, String blockLogPath) {
+    public void setBlockTimeout(int blockTimeout) {
         this.blockTimeout = blockTimeout;
+    }
+
+    public void setBlockLogPath(String blockLogPath) {
         this.blockLogPath = blockLogPath;
+    }
+
+    public AppBlockCanaryContext() {
     }
 
     /**
@@ -94,11 +99,7 @@ public class AppBlockCanaryContext extends BlockCanaryContext {
      * @return path of log files
      */
     public String providePath() {
-        if (blockLogPath == null) {
-            return AndroidStorageUtil.getStoragePath() + File.separator + "block" + File.separator;
-        } else {
-            return blockLogPath;
-        }
+        return TextUtils.isEmpty(blockLogPath) ? "/blockcanary/" : blockLogPath;
     }
 
     /**

@@ -67,7 +67,7 @@ public class PermissionGrantActivity extends AppCompatActivity {
 
         if (isRequireCheck) {
             String[] permissions = getPermissions();
-            if (PermissionUtil.lacksPermissions(this, permissions)) {
+            if (!PermissionUtil.hasPermissions(this, permissions)) {
                 requestPermissions(permissions); // 请求权限
             } else {
                 allPermissionsGranted(); // 全部权限都已获取
@@ -92,7 +92,7 @@ public class PermissionGrantActivity extends AppCompatActivity {
         if (requestCode == PERMISSION_REQUEST_CODE && hasAllPermissionsGranted(grantResults)) {
             isRequireCheck = true;
             // 低版本有可能权限被拒绝了，grantResults依然返回0，再使用权限检查器检查一遍
-            if (PermissionUtil.lacksPermissions(this, getPermissions())) {
+            if (!PermissionUtil.hasPermissions(this, getPermissions())) {
                 showMissingPermissionDialog();
             } else {
                 allPermissionsGranted();

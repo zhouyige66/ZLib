@@ -43,13 +43,13 @@ public class PermissionUtil {
      * @param permissions
      * @return true-未授权，false-已授权
      */
-    public static boolean lacksPermissions(@NonNull Context context, @NonNull String... permissions) {
+    public static boolean hasPermissions(@NonNull Context context, @NonNull String... permissions) {
         for (String permission : permissions) {
-            if (lacksPermission(context, permission)) {
-                return true;
+            if (!hasPermission(context, permission)) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     /**
@@ -57,9 +57,9 @@ public class PermissionUtil {
      *
      * @param context
      * @param permission
-     * @return true-未授权，false-已授权
+     * @return true-已授权，false-未授权
      */
-    public static boolean lacksPermission(@NonNull Context context, @NonNull String permission) {
+    public static boolean hasPermission(@NonNull Context context, @NonNull String permission) {
         /**
          * 1.Context.checkSelfPermission(String permission)
          * 2.ContextCompat.checkSelfPermission(String permission)
@@ -70,25 +70,25 @@ public class PermissionUtil {
          * 5.PermissionChecker.checkSelfPermission(@NonNull Context context,@NonNull String permission)
          *   5.1 targetSDKVersion>=23时无效，小于23时，直接返回true，检测结果不准确
          */
-        boolean result;
+        boolean hasPermission;
 
         // 以23版本为界（Build.VERSION_CODES.M）
         int targetSDKVersion = getTargetSDKVersion(context);
         int sdkInt = Build.VERSION.SDK_INT;
         if (sdkInt >= 23) {// Android 6.0及以上
             if (targetSDKVersion >= 23) {// 动态授权，检测方案不同
-                result = context.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED;
+                hasPermission = context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
             } else {// 使用兼容类PermissionChecker
-                result = PermissionChecker.checkSelfPermission(context, permission) ==
-                        PermissionChecker.PERMISSION_DENIED;
+                hasPermission = PermissionChecker.checkSelfPermission(context, permission) ==
+                        PermissionChecker.PERMISSION_GRANTED;
             }
         } else {
             // 检测结果不准确，有可能被应用管家之类的关闭了，最好是try catch处理一下
-            result = ContextCompat.checkSelfPermission(context, permission) ==
-                    PackageManager.PERMISSION_DENIED;
+            hasPermission = ContextCompat.checkSelfPermission(context, permission) ==
+                    PackageManager.PERMISSION_GRANTED;
         }
 
-        return result;
+        return hasPermission;
     }
 
 }

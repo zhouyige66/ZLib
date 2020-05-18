@@ -6,9 +6,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -22,17 +19,14 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import cn.roy.zlib.log.AndroidStorageUtil;
-
 /**
  * @Description 自定义异常处理
  * @Author kk20
  * @Date 2017/5/18
  * @Version V1.0.0
  */
-public class CrashMonitor implements UncaughtExceptionHandler {
-    private static Logger logger = LoggerFactory.getLogger(CrashMonitor.class);
-    private static CrashMonitor instance;// CrashHandler实例
+public class CrashExceptionHandler implements UncaughtExceptionHandler {
+    private static CrashExceptionHandler instance;// CrashHandler实例
 
     // 程序的Context对象
     private Context mContext;
@@ -43,23 +37,24 @@ public class CrashMonitor implements UncaughtExceptionHandler {
     // 日志文件名的一部分
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
             Locale.getDefault());
-    private HandleException handleException = null;
+
     private String logPath;
+    private CustomExceptionHandler customExceptionHandler = null;
 
     /**
      * 保证只有一个CrashHandler实例
      */
-    private CrashMonitor() {
+    private CrashExceptionHandler() {
     }
 
     /**
      * 获取CrashHandler实例 ,单例模式
      */
-    public static synchronized CrashMonitor getInstance() {
+    public static synchronized CrashExceptionHandler getInstance() {
         if (instance == null) {
-            synchronized (CrashMonitor.class) {
+            synchronized (CrashExceptionHandler.class) {
                 if (instance == null) {
-                    instance = new CrashMonitor();
+                    instance = new CrashExceptionHandler();
                 }
             }
         }
@@ -84,24 +79,21 @@ public class CrashMonitor implements UncaughtExceptionHandler {
         if (ex == null) {
             return false;
         }
-        // 记录崩溃信息到日志
-        logger.error("程序出现异常，崩溃了！", ex);
         // 收集设备参数信息
         collectDeviceInfo(mContext);
         // 保存日志文件
         saveCrashInfo2File(ex);
-        if (handleException != null) {
-            handleException.handleException(ex);
+        if (customExceptionHandler != null) {
+            customExceptionHandler.handleException(ex);
             System.exit(0);
+            return true;
         }
 
-        return true;
+        return false;
     }
 
-    /**
-     * 收集设备参数信息
-     */
     private void collectDeviceInfo(Context context) {
+        infoMap.clear();
         try {
             PackageManager pm = context.getPackageManager();
             PackageInfo pi = pm.getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);
@@ -125,9 +117,6 @@ public class CrashMonitor implements UncaughtExceptionHandler {
         }
     }
 
-    /**
-     * 保存错误信息到文件中
-     */
     private String saveCrashInfo2File(Throwable ex) {
         StringBuffer sb = new StringBuffer();
         for (Map.Entry<String, String> entry : infoMap.entrySet()) {
@@ -139,19 +128,17 @@ public class CrashMonitor implements UncaughtExceptionHandler {
         Writer writer = new StringWriter();
         PrintWriter printWriter = new PrintWriter(writer);
         ex.printStackTrace(printWriter);
-        Throwable cause = ex.getCause();
-        while (cause != null) {
-            cause.printStackTrace(printWriter);
-            cause = cause.getCause();
-        }
         printWriter.close();
         String result = writer.toString();
+        sb.append("---------------异常堆栈信息---------------");
         sb.append(result);
+        sb.append("---------------异常堆栈信息结束---------------");
         try {
             String time = formatter.format(new Date());
             String fileName = "crash-" + time + ".log";
-            logPath = logPath == null ? AndroidStorageUtil.getStoragePath() + File.separator
-                    + mContext.getPackageName() : logPath;
+            logPath = logPath == null ?
+                    (mContext.getCacheDir().getAbsolutePath() + File.separator)
+                    : logPath;
             String path = logPath.endsWith("/") ? logPath : (logPath.concat("/"))
                     + "crash" + File.separator;
             File dir = new File(path);
@@ -183,20 +170,15 @@ public class CrashMonitor implements UncaughtExceptionHandler {
         Thread.setDefaultUncaughtExceptionHandler(this);
     }
 
-    /**
-     * 设置异常处理
-     *
-     * @param handleException
-     */
-    public void setHandleException(HandleException handleException) {
-        this.handleException = handleException;
-    }
-
     public void setLogPath(String logPath) {
         this.logPath = logPath;
     }
 
-    public interface HandleException {
+    public void setCustomExceptionHandler(CustomExceptionHandler customExceptionHandler) {
+        this.customExceptionHandler = customExceptionHandler;
+    }
+
+    public interface CustomExceptionHandler {
         void handleException(Throwable ex);
     }
 
