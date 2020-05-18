@@ -38,6 +38,7 @@ public class CrashExceptionHandler implements UncaughtExceptionHandler {
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
             Locale.getDefault());
 
+    private boolean autoSaveCrash = false;
     private String logPath;
     private CustomExceptionHandler customExceptionHandler = null;
 
@@ -79,10 +80,13 @@ public class CrashExceptionHandler implements UncaughtExceptionHandler {
         if (ex == null) {
             return false;
         }
-        // 收集设备参数信息
-        collectDeviceInfo(mContext);
-        // 保存日志文件
-        saveCrashInfo2File(ex);
+
+        if (autoSaveCrash) {
+            // 收集设备参数信息
+            collectDeviceInfo();
+            // 保存日志文件
+            saveCrashInfo2File(ex);
+        }
         if (customExceptionHandler != null) {
             customExceptionHandler.handleException(ex);
             System.exit(0);
@@ -92,11 +96,11 @@ public class CrashExceptionHandler implements UncaughtExceptionHandler {
         return false;
     }
 
-    private void collectDeviceInfo(Context context) {
+    private void collectDeviceInfo() {
         infoMap.clear();
         try {
-            PackageManager pm = context.getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);
+            PackageManager pm = mContext.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(mContext.getPackageName(), PackageManager.GET_ACTIVITIES);
             if (pi != null) {
                 String versionName = pi.versionName == null ? "null" : pi.versionName;
                 String versionCode = pi.versionCode + "";
@@ -168,6 +172,10 @@ public class CrashExceptionHandler implements UncaughtExceptionHandler {
         mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();
         // 设置该CrashHandler为程序的默认处理器
         Thread.setDefaultUncaughtExceptionHandler(this);
+    }
+
+    public void setAutoSaveCrash(boolean autoSaveCrash) {
+        this.autoSaveCrash = autoSaveCrash;
     }
 
     public void setLogPath(String logPath) {

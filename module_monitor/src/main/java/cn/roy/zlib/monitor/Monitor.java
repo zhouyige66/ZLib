@@ -14,6 +14,7 @@ import com.github.moduth.blockcanary.BlockCanary;
 public class Monitor {
     private Context applicationContext;
     private boolean isCrashMonitorEnable = false;
+    private boolean autoSaveCrashLog =false;
     private String crashMonitorLogPath;
     private CrashExceptionHandler.CustomExceptionHandler customExceptionHandler;
     private boolean isBlockMonitorEnable = false;
@@ -29,12 +30,19 @@ public class Monitor {
         return this;
     }
 
-    public void setCrashMonitorLogPath(String crashMonitorLogPath) {
-        this.crashMonitorLogPath = crashMonitorLogPath;
+    public Monitor setAutoSaveCrashLog(boolean autoSaveCrashLog) {
+        this.autoSaveCrashLog = autoSaveCrashLog;
+        return this;
     }
 
-    public void setCustomExceptionHandler(CrashExceptionHandler.CustomExceptionHandler customExceptionHandler) {
+    public Monitor setCrashMonitorLogPath(String crashMonitorLogPath) {
+        this.crashMonitorLogPath = crashMonitorLogPath;
+        return this;
+    }
+
+    public Monitor setCustomExceptionHandler(CrashExceptionHandler.CustomExceptionHandler customExceptionHandler) {
         this.customExceptionHandler = customExceptionHandler;
+        return this;
     }
 
     public Monitor setBlockMonitorEnable(boolean blockMonitorEnable) {
@@ -57,6 +65,7 @@ public class Monitor {
             // 记录崩溃日志
             CrashExceptionHandler handler = CrashExceptionHandler.getInstance();
             handler.init(this.applicationContext);
+            handler.setAutoSaveCrash(autoSaveCrashLog);
             if (!TextUtils.isEmpty(this.crashMonitorLogPath)) {
                 handler.setLogPath(this.crashMonitorLogPath);
             }
