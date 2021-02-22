@@ -5,6 +5,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
+import android.os.Environment;
+import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,7 +38,7 @@ public class CrashExceptionHandler implements UncaughtExceptionHandler {
     // 用来存储设备信息和异常信息
     private Map<String, String> infoMap = new HashMap<>();
     // 日志文件名的一部分
-    private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+    private SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_HH:mm:ss",
             Locale.getDefault());
 
     private boolean autoSaveCrash = false;
@@ -135,23 +138,25 @@ public class CrashExceptionHandler implements UncaughtExceptionHandler {
         printWriter.close();
         String result = writer.toString();
         sb.append("---------------异常堆栈信息---------------");
+        sb.append("\n");
         sb.append(result);
+        sb.append("\n");
         sb.append("---------------异常堆栈信息结束---------------");
         try {
             String time = formatter.format(new Date());
-            String fileName = "crash-" + time + ".log";
-            logPath = logPath == null ?
-                    (mContext.getCacheDir().getAbsolutePath() + File.separator)
+            String fileName = time + ".log";
+            String filePath = TextUtils.isEmpty(logPath) ?
+                    (mContext.getExternalFilesDir(Environment.getDataDirectory().getAbsolutePath())
+                            .getAbsolutePath() + File.separator + "crash" + File.separator
+                            + fileName)
                     : logPath;
-            String path = logPath.endsWith("/") ? logPath : (logPath.concat("/"))
-                    + "crash" + File.separator;
-            File dir = new File(path);
-            if (!dir.exists()) {
-                dir.mkdirs();
+            Log.d("roy", filePath);
+            File file = new File(filePath);
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
             }
-            File file = new File(path + fileName);
             file.createNewFile();
-            FileOutputStream fos = new FileOutputStream(path + fileName);
+            FileOutputStream fos = new FileOutputStream(file);
             fos.write(sb.toString().getBytes());
             fos.close();
             return fileName;

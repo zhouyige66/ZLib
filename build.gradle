@@ -49,7 +49,7 @@ ext {
     // android配置项
     compileSdkVersion = 29
     buildToolsVersion = '29.0.0'
-    minSdkVersion = 14
+    minSdkVersion = 16
     targetSdkVersion = 29
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

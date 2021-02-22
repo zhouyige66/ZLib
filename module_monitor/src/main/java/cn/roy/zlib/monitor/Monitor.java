@@ -14,12 +14,12 @@ import com.github.moduth.blockcanary.BlockCanary;
 public class Monitor {
     private Context applicationContext;
     private boolean isCrashMonitorEnable = false;
-    private boolean autoSaveCrashLog = false;
     private String crashMonitorLogPath;
+    private boolean autoSaveCrashLog = false;
     private CustomExceptionHandler customExceptionHandler;
     private boolean isBlockMonitorEnable = false;
-    private int blockMonitorTimeout;
     private String blockMonitorLogPath;
+    private int blockMonitorTimeout;
 
     public Monitor(Context context) {
         this.applicationContext = context.getApplicationContext();
@@ -30,13 +30,13 @@ public class Monitor {
         return this;
     }
 
-    public Monitor setAutoSaveCrashLog(boolean autoSaveCrashLog) {
-        this.autoSaveCrashLog = autoSaveCrashLog;
+    public Monitor setCrashMonitorLogPath(String crashMonitorLogPath) {
+        this.crashMonitorLogPath = crashMonitorLogPath;
         return this;
     }
 
-    public Monitor setCrashMonitorLogPath(String crashMonitorLogPath) {
-        this.crashMonitorLogPath = crashMonitorLogPath;
+    public Monitor setCrashLogAutoSave(boolean autoSaveCrashLog) {
+        this.autoSaveCrashLog = autoSaveCrashLog;
         return this;
     }
 

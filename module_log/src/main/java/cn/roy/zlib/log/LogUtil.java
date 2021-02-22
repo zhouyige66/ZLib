@@ -22,7 +22,7 @@ public class LogUtil {
             StackTraceElement stackTraceElement = stackTraceElements[4];
             String className = stackTraceElement.getClassName();
             if (className.contains("$")) {
-                className = className + "_line:" + stackTraceElement.getLineNumber();
+                className = className + "@line:" + stackTraceElement.getLineNumber();
             }
             logger = LoggerFactory.getLogger(className);
         } else {
