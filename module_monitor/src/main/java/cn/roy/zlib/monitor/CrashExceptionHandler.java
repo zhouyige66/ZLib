@@ -49,9 +49,9 @@ public class CrashExceptionHandler implements UncaughtExceptionHandler {
     }
 
     /**
-     * 获取CrashHandler实例 ,单例模式
+     * 获取CrashHandler实例，单例模式
      */
-    public static synchronized CrashExceptionHandler getInstance() {
+    public static CrashExceptionHandler getInstance() {
         if (instance == null) {
             synchronized (CrashExceptionHandler.class) {
                 if (instance == null) {
@@ -68,13 +68,13 @@ public class CrashExceptionHandler implements UncaughtExceptionHandler {
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
         if (!handleException(ex) && mDefaultHandler != null) {
-            //如果用户没有处理则让系统默认的异常处理器来处理
+            // 如果用户没有处理则让系统默认的异常处理器来处理
             mDefaultHandler.uncaughtException(thread, ex);
         }
     }
 
     /**
-     * 自定义错误处理,收集错误信息 发送错误报告等操作均在此完成
+     * 自定义错误处理，收集错误信息、发送错误报告等操作均在此完成
      */
     private boolean handleException(Throwable ex) {
         if (ex == null) {
@@ -184,10 +184,6 @@ public class CrashExceptionHandler implements UncaughtExceptionHandler {
 
     public void setCustomExceptionHandler(CustomExceptionHandler customExceptionHandler) {
         this.customExceptionHandler = customExceptionHandler;
-    }
-
-    public interface CustomExceptionHandler {
-        void handleException(Throwable ex);
     }
 
 }

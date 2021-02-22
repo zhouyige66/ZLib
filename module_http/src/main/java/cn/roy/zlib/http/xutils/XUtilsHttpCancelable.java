@@ -10,10 +10,10 @@ import cn.roy.zlib.http.core.HttpRequestCancelable;
  * @Date: 2020/5/9 17:05
  * @Version: v1.0
  */
-public class XUtilHttpCancelable implements HttpRequestCancelable {
+public class XUtilsHttpCancelable implements HttpRequestCancelable {
     Callback.Cancelable cancelable;
 
-    public XUtilHttpCancelable(Callback.Cancelable cancelable) {
+    public XUtilsHttpCancelable(Callback.Cancelable cancelable) {
         this.cancelable = cancelable;
     }
 

@@ -1,4 +1,4 @@
-package cn.roy.zlib.http;
+package cn.roy.zlib.http.core;
 
 import com.alibaba.fastjson.JSON;
 

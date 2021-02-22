@@ -2,6 +2,8 @@ package cn.roy.zlib.http.retrofit;
 
 import android.text.TextUtils;
 
+import com.alibaba.fastjson.support.retrofit.Retrofit2ConverterFactory;
+
 import java.util.concurrent.TimeUnit;
 
 import cn.roy.zlib.http.core.HttpRequestBaseParam;
@@ -54,8 +56,8 @@ public class RetrofitFactory {
             retrofitBuilder.baseUrl(baseUrl);
         }
         Retrofit retrofit = retrofitBuilder
-//                .addConverterFactory(new Retrofit2ConverterFactory())// 装换成JSON
-                .addConverterFactory(GsonConverterFactory.create())// 装换成JSON
+//                .addConverterFactory(new Retrofit2ConverterFactory())
+                .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(okHttpClient)
                 .build();

@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">module_permission</string>
+    <string name="permission_lack_dialog_title">温馨提示</string>
+    <string name="permission_lack_dialog_msg">当前应用缺少必要权限。请进入应用设置页面打开所需权限。最后点击两次“后退”按钮即可返回。</string>
+    <string name="permission_lack_dialog_negative_button">取消</string>
+    <string name="permission_lack_dialog_positive_button">去授权</string>
 </resources>

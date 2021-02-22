@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @Description:
+ * @Description: App Block配置
  * @Author: Roy Z
  * @Date: 2020/5/12 16:10
  * @Version: v1.0
@@ -21,15 +21,15 @@ public class AppBlockCanaryContext extends BlockCanaryContext {
     private int blockTimeout = 1000;
     private String blockLogPath;
 
+    public AppBlockCanaryContext() {
+    }
+
     public void setBlockTimeout(int blockTimeout) {
         this.blockTimeout = blockTimeout;
     }
 
     public void setBlockLogPath(String blockLogPath) {
         this.blockLogPath = blockLogPath;
-    }
-
-    public AppBlockCanaryContext() {
     }
 
     /**

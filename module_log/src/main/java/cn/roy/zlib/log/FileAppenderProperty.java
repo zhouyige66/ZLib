@@ -124,8 +124,9 @@ public class FileAppenderProperty {
                 throw new RuntimeException("日志保存地址为空");
             }
             if (TextUtils.isEmpty(logFileNamePattern)) {
-                throw new RuntimeException("日志存档路径Pattern，" +
-                        "请参照\"https://logback.qos.ch/manual/appenders.html#SizeAndTimeBasedFNATP\"或\"www.logback.cn\"");
+                throw new RuntimeException("日志存档路径Pattern，请参照" +
+                        "\"https://logback.qos.ch/manual/appenders.html#SizeAndTimeBasedFNATP\"" +
+                        "或\"www.logback.cn\"");
             }
 
             return new FileAppenderProperty(this);

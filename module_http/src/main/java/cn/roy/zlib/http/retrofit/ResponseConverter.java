@@ -1,4 +1,4 @@
-package cn.roy.zlib.http;
+package cn.roy.zlib.http.retrofit;
 
 import com.google.gson.Gson;
 
@@ -24,7 +24,6 @@ import io.reactivex.schedulers.Schedulers;
 public class ResponseConverter<T> implements ObservableOnSubscribe<T>, Observer<T> {
     private HttpResponsePretreatment pretreatment;
     private HttpRequestCallback<T> callback;
-
     private ObservableEmitter<T> emitter;
 
     public ResponseConverter(HttpResponsePretreatment pretreatment, HttpRequestCallback<T> callback) {

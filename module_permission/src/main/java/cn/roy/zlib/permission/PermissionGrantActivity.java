@@ -37,10 +37,8 @@ public class PermissionGrantActivity extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 0;
     // 系统权限管理页面请求code
     public static final int CODE_PERMISSION_GRANT_REQUEST = 10000;
-    // 方案
-    private static final String PACKAGE_URL_SCHEME = "package:";
-
-    private boolean isRequireCheck; // 是否需要系统权限检测
+    // 是否已经申请过权限
+    private boolean isNeedCheckPermission = true;
 
     /**
      * 启动授权页面
@@ -57,23 +55,19 @@ public class PermissionGrantActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        isRequireCheck = true;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (isRequireCheck) {
-            String[] permissions = getPermissions();
+        if (isNeedCheckPermission) {
+            String[] permissions = getRequirePermissions();
             if (!PermissionUtil.hasPermissions(this, permissions)) {
-                requestPermissions(permissions); // 请求权限
+                ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
             } else {
-                allPermissionsGranted(); // 全部权限都已获取
+                allPermissionGranted(); // 全部权限都已获取
             }
-        } else {
-            isRequireCheck = true;
         }
     }
 
@@ -89,38 +83,33 @@ public class PermissionGrantActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        if (requestCode == PERMISSION_REQUEST_CODE && hasAllPermissionsGranted(grantResults)) {
-            isRequireCheck = true;
+        if (requestCode == PERMISSION_REQUEST_CODE && isAllPermissionGranted(grantResults)) {
+            isNeedCheckPermission = true;
             // 低版本有可能权限被拒绝了，grantResults依然返回0，再使用权限检查器检查一遍
-            if (!PermissionUtil.hasPermissions(this, getPermissions())) {
+            if (!PermissionUtil.hasPermissions(this, getRequirePermissions())) {
                 showMissingPermissionDialog();
             } else {
-                allPermissionsGranted();
+                allPermissionGranted();
             }
         } else {
-            isRequireCheck = false;
+            isNeedCheckPermission = false;
             showMissingPermissionDialog();
         }
     }
 
     // 返回传递的权限参数
-    private String[] getPermissions() {
+    private String[] getRequirePermissions() {
         return getIntent().getStringArrayExtra(EXTRA_PERMISSIONS);
     }
 
-    // 请求权限兼容低版本
-    private void requestPermissions(String... permissions) {
-        ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE);
-    }
-
     // 全部权限均已获取
-    private void allPermissionsGranted() {
+    private void allPermissionGranted() {
         setResult(PERMISSIONS_GRANTED);
         finish();
     }
 
     // 含有全部的权限
-    private boolean hasAllPermissionsGranted(@NonNull int[] grantResults) {
+    private boolean isAllPermissionGranted(@NonNull int[] grantResults) {
         for (int grantResult : grantResults) {
             if (grantResult == PackageManager.PERMISSION_DENIED) {
                 return false;
@@ -131,33 +120,31 @@ public class PermissionGrantActivity extends AppCompatActivity {
 
     // 显示缺失权限提示
     private void showMissingPermissionDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(PermissionGrantActivity.this);
-        builder.setTitle("提示");
-        builder.setMessage("当前应用缺少必要权限。\n请点击“设置”-“权限”-打开所需权限。\n最后点击两次“后退”按钮即可返回。");
-
-        // 拒绝, 退出应用
-        builder.setNegativeButton("退出", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                setResult(PERMISSIONS_DENIED);
-                finish();
-            }
-        });
-
-        builder.setPositiveButton("设置", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startAppSettings();
-            }
-        });
-
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.permission_lack_dialog_title));
+        builder.setMessage(getString(R.string.permission_lack_dialog_msg));
+        builder.setNegativeButton(R.string.permission_lack_dialog_negative_button,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        setResult(PERMISSIONS_DENIED);
+                        finish();
+                    }
+                });
+        builder.setPositiveButton(R.string.permission_lack_dialog_positive_button,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startAppSettings();
+                    }
+                });
         builder.show();
     }
 
     // 启动应用的设置
     private void startAppSettings() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        intent.setData(Uri.parse(PACKAGE_URL_SCHEME + getPackageName()));
+        intent.setData(Uri.parse("package:" + getPackageName()));
         startActivity(intent);
     }
 

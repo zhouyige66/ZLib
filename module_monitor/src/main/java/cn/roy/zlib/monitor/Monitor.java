@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import com.github.moduth.blockcanary.BlockCanary;
 
 /**
- * @Description:
+ * @Description: 应用监控器
  * @Author: Roy Z
  * @Date: 2020/5/12 16:11
  * @Version: v1.0
@@ -14,9 +14,9 @@ import com.github.moduth.blockcanary.BlockCanary;
 public class Monitor {
     private Context applicationContext;
     private boolean isCrashMonitorEnable = false;
-    private boolean autoSaveCrashLog =false;
+    private boolean autoSaveCrashLog = false;
     private String crashMonitorLogPath;
-    private CrashExceptionHandler.CustomExceptionHandler customExceptionHandler;
+    private CustomExceptionHandler customExceptionHandler;
     private boolean isBlockMonitorEnable = false;
     private int blockMonitorTimeout;
     private String blockMonitorLogPath;
@@ -40,7 +40,7 @@ public class Monitor {
         return this;
     }
 
-    public Monitor setCustomExceptionHandler(CrashExceptionHandler.CustomExceptionHandler customExceptionHandler) {
+    public Monitor setCustomExceptionHandler(CustomExceptionHandler customExceptionHandler) {
         this.customExceptionHandler = customExceptionHandler;
         return this;
     }

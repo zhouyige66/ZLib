@@ -41,7 +41,7 @@ public class PermissionUtil {
      *
      * @param context
      * @param permissions
-     * @return true-未授权，false-已授权
+     * @return true-已授权，false-未授权
      */
     public static boolean hasPermissions(@NonNull Context context, @NonNull String... permissions) {
         for (String permission : permissions) {
@@ -77,7 +77,8 @@ public class PermissionUtil {
         int sdkInt = Build.VERSION.SDK_INT;
         if (sdkInt >= 23) {// Android 6.0及以上
             if (targetSDKVersion >= 23) {// 动态授权，检测方案不同
-                hasPermission = context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+                hasPermission = context.checkSelfPermission(permission) ==
+                        PackageManager.PERMISSION_GRANTED;
             } else {// 使用兼容类PermissionChecker
                 hasPermission = PermissionChecker.checkSelfPermission(context, permission) ==
                         PermissionChecker.PERMISSION_GRANTED;

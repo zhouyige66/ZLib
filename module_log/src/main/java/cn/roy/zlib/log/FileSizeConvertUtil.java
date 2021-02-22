@@ -15,7 +15,7 @@ import java.text.DecimalFormat;
  * @Date: 2019-08-07 17:04
  * @Version: v1.0
  */
-public class FileSizeConversionUtil {
+public class FileSizeConvertUtil {
     public static final int UNIT_1000 = 1000;
     public static final int UNIT_1024 = 1024;
 
@@ -27,8 +27,8 @@ public class FileSizeConversionUtil {
 
     }
 
-    public static String getFileSizeWithInteger(long size){
-        return getFileSizeWithInteger(size,UNIT_1024);
+    public static String getReadableFileSize(long size){
+        return getReadableFileSize(size,UNIT_1024);
     }
 
     /**
@@ -38,7 +38,7 @@ public class FileSizeConversionUtil {
      * @param unit 换算单位
      * @return
      */
-    public static String getFileSizeWithInteger(long size, @UnitType int unit) {
+    public static String getReadableFileSize(long size, @UnitType int unit) {
         if (size <= 0) {
             return "0B";
         }
@@ -60,11 +60,11 @@ public class FileSizeConversionUtil {
         return (int)Math.floor(size / Math.pow(unit, digitGroups)) + units[digitGroups];
     }
 
-    public static String readableFileSize(long size) {
-        return readableFileSize(size, UNIT_1024);
+    public static String getReadableFileSize2(long size) {
+        return getReadableFileSize2(size, UNIT_1024);
     }
 
-    public static String readableFileSize(long size, @UnitType int unit) {
+    public static String getReadableFileSize2(long size, @UnitType int unit) {
         if (size <= 0) {
             return "0B";
         }

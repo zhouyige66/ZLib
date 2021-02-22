@@ -1,9 +1,16 @@
 package cn.roy.zlib.log;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.os.storage.StorageManager;
+
+import androidx.core.content.ContextCompat;
+import androidx.core.content.PermissionChecker;
 
 import java.io.File;
 import java.lang.reflect.Array;
@@ -17,6 +24,42 @@ import java.lang.reflect.Method;
  * @Version: v1.0
  */
 public class AndroidStorageUtil {
+
+    /**
+     * 判断存储权限是否已经被授予
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isStoragePermissionGranted(Context context) {
+        boolean hasPermission = false;
+        // 以23版本为界（Build.VERSION_CODES.M）
+        int targetSDKVersion = 0;
+        try {
+            PackageInfo info = context.getPackageManager().getPackageInfo(
+                    context.getPackageName(), 0);
+            targetSDKVersion = info.applicationInfo.targetSdkVersion;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        int sdkInt = Build.VERSION.SDK_INT;
+        String permission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        if (sdkInt >= 23) {// Android 6.0及以上
+            if (targetSDKVersion >= 23) {// 动态授权，检测方案不同
+                hasPermission = context.checkSelfPermission(permission)
+                        == PackageManager.PERMISSION_GRANTED;
+            } else {// 使用兼容类PermissionChecker
+                hasPermission = PermissionChecker.checkSelfPermission(context, permission)
+                        == PermissionChecker.PERMISSION_GRANTED;
+            }
+        } else {
+            // 检测结果不准确，有可能被应用管家之类的关闭了，最好是try catch处理一下
+            hasPermission = ContextCompat.checkSelfPermission(context, permission) ==
+                    PackageManager.PERMISSION_GRANTED;
+        }
+
+        return hasPermission;
+    }
 
     /**
      * 判断外置sd卡是否挂载
@@ -46,7 +89,6 @@ public class AndroidStorageUtil {
                     isMounted = removable;
                     break;
                 }
-
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

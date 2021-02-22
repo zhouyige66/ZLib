@@ -1,16 +1,14 @@
-package cn.roy.zlib.http;
+package cn.roy.zlib.http.retrofit;
 
 import android.text.TextUtils;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import cn.roy.zlib.http.core.AbstractHttpClient;
 import cn.roy.zlib.http.core.HttpRequestCallback;
 import cn.roy.zlib.http.core.HttpRequestCancelable;
 import cn.roy.zlib.http.exception.RequestException;
-import cn.roy.zlib.http.retrofit.ApiService;
-import cn.roy.zlib.http.retrofit.ResponseObserver;
-import cn.roy.zlib.http.retrofit.RetrofitFactory;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
@@ -47,7 +45,17 @@ public class RetrofitHttpClient extends AbstractHttpClient {
                                                  Map<String, String> headerMap,
                                                  Map<String, String> queryMap, Object obj,
                                                  HttpRequestCallback<T> callback) {
-        return null;
+        ResponseObserver<T> observer = new ResponseObserver(responsePretreatment, callback);
+        try {
+            String[] urls = validUrl(url);
+            ApiService apiService = getApiService(urls[0]);
+            Observable<ResponseBody> observable = apiService.post(urls[1]);
+            associate(observable, observer);
+        } catch (RequestException e) {
+            e.printStackTrace();
+            observer.publish(e);
+        }
+        return observer;
     }
 
     private String[] validUrl(String url) throws RequestException {

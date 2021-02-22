@@ -19,7 +19,12 @@ public class LogUtil {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         Logger logger;
         if (stackTraceElements.length > 5) {
-            logger = LoggerFactory.getLogger(stackTraceElements[4].getClassName());
+            StackTraceElement stackTraceElement = stackTraceElements[4];
+            String className = stackTraceElement.getClassName();
+            if (className.contains("$")) {
+                className = className + "_line:" + stackTraceElement.getLineNumber();
+            }
+            logger = LoggerFactory.getLogger(className);
         } else {
             logger = LoggerFactory.getLogger(LogUtil.class);
         }

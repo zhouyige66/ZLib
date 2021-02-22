@@ -2,7 +2,6 @@ package cn.roy.zlib.http.retrofit;
 
 import java.io.IOException;
 
-import cn.roy.zlib.http.ResponseConverter;
 import cn.roy.zlib.http.core.HttpRequestCallback;
 import cn.roy.zlib.http.core.HttpRequestCancelable;
 import cn.roy.zlib.http.core.HttpResponsePretreatment;

@@ -4,6 +4,8 @@ import cn.roy.zlib.http.core.HttpRequestBaseParam;
 import cn.roy.zlib.http.core.HttpRequestClient;
 import cn.roy.zlib.http.core.HttpRequestLogger;
 import cn.roy.zlib.http.core.HttpResponsePretreatment;
+import cn.roy.zlib.http.retrofit.RetrofitHttpClient;
+import cn.roy.zlib.http.xutils.XUtilsHttpClient;
 
 /**
  * @Description:
