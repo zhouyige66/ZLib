@@ -75,7 +75,7 @@ public class LogConfigBuilder {
         }
         // 日志文件夹
         String logFilePath = storagePath.concat(File.separator).concat("log/log.txt");
-        String fileNamePattern = logFilePath + File.separator + "%s.%d{yyyy-MM-dd}.%i.txt";
+        String fileNamePattern = logFilePath + File.separator + "log_%d{yyyy-MM-dd}@%i.txt";
         // 读取手机存储
         long internalTotalSize = AndroidStorageUtil.getInternalTotalSize();
         long sdCardTotalSize = AndroidStorageUtil.getSDCardTotalSize();

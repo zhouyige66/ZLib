@@ -44,6 +44,7 @@ public class CrashExceptionHandler implements UncaughtExceptionHandler {
     private boolean autoSaveCrash = false;
     private String logPath;
     private CustomExceptionHandler customExceptionHandler = null;
+    private ExceptionInfoLogger exceptionInfoLogger = null;
 
     /**
      * 保证只有一个CrashHandler实例
@@ -103,7 +104,8 @@ public class CrashExceptionHandler implements UncaughtExceptionHandler {
         infoMap.clear();
         try {
             PackageManager pm = mContext.getPackageManager();
-            PackageInfo pi = pm.getPackageInfo(mContext.getPackageName(), PackageManager.GET_ACTIVITIES);
+            PackageInfo pi = pm.getPackageInfo(mContext.getPackageName(),
+                    PackageManager.GET_ACTIVITIES);
             if (pi != null) {
                 String versionName = pi.versionName == null ? "null" : pi.versionName;
                 String versionCode = pi.versionCode + "";
@@ -124,7 +126,7 @@ public class CrashExceptionHandler implements UncaughtExceptionHandler {
         }
     }
 
-    private String saveCrashInfo2File(Throwable ex) {
+    private void saveCrashInfo2File(Throwable ex) {
         StringBuffer sb = new StringBuffer();
         for (Map.Entry<String, String> entry : infoMap.entrySet()) {
             String key = entry.getKey();
@@ -137,14 +139,17 @@ public class CrashExceptionHandler implements UncaughtExceptionHandler {
         ex.printStackTrace(printWriter);
         printWriter.close();
         String result = writer.toString();
+        if(exceptionInfoLogger!=null){
+            exceptionInfoLogger.print(result);
+        }
         sb.append("---------------异常堆栈信息---------------");
         sb.append("\n");
         sb.append(result);
-        sb.append("\n");
         sb.append("---------------异常堆栈信息结束---------------");
+        String exception = sb.toString();
         try {
             String time = formatter.format(new Date());
-            String fileName = time + ".log";
+            String fileName = time + ".txt";
             String filePath = TextUtils.isEmpty(logPath) ?
                     (mContext.getExternalFilesDir(Environment.getDataDirectory().getAbsolutePath())
                             .getAbsolutePath() + File.separator + "crash" + File.separator
@@ -157,13 +162,11 @@ public class CrashExceptionHandler implements UncaughtExceptionHandler {
             }
             file.createNewFile();
             FileOutputStream fos = new FileOutputStream(file);
-            fos.write(sb.toString().getBytes());
+            fos.write(exception.getBytes());
             fos.close();
-            return fileName;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     /**
@@ -191,4 +194,7 @@ public class CrashExceptionHandler implements UncaughtExceptionHandler {
         this.customExceptionHandler = customExceptionHandler;
     }
 
+    public void setExceptionInfoLogger(ExceptionInfoLogger exceptionInfoLogger) {
+        this.exceptionInfoLogger = exceptionInfoLogger;
+    }
 }

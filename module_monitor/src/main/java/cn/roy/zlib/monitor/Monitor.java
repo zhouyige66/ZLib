@@ -17,6 +17,7 @@ public class Monitor {
     private String crashMonitorLogPath;
     private boolean autoSaveCrashLog = false;
     private CustomExceptionHandler customExceptionHandler;
+    private ExceptionInfoLogger exceptionInfoLogger;
     private boolean isBlockMonitorEnable = false;
     private String blockMonitorLogPath;
     private int blockMonitorTimeout;
@@ -42,6 +43,11 @@ public class Monitor {
 
     public Monitor setCustomExceptionHandler(CustomExceptionHandler customExceptionHandler) {
         this.customExceptionHandler = customExceptionHandler;
+        return this;
+    }
+
+    public Monitor setExceptionInfoLogger(ExceptionInfoLogger exceptionInfoLogger) {
+        this.exceptionInfoLogger = exceptionInfoLogger;
         return this;
     }
 
@@ -71,6 +77,9 @@ public class Monitor {
             }
             if (this.customExceptionHandler != null) {
                 handler.setCustomExceptionHandler(customExceptionHandler);
+            }
+            if (this.exceptionInfoLogger != null) {
+                handler.setExceptionInfoLogger(exceptionInfoLogger);
             }
         }
         if (isBlockMonitorEnable) {
