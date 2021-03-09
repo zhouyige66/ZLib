@@ -1,3 +1,6 @@
 include ':module_http_kotlin'
-include ':module_http', ':module_log', ':module_permission', ':module_monitor', ':app'
+include ':module_log'
+include ':module_monitor'
+include ':module_permission'
+include ':app'
 

@@ -1,6 +1,7 @@
 package cn.roy.zlib.http
 
 import android.util.Log
+import cn.roy.zlib.http.metrics.StatisticsEvent
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 
@@ -10,38 +11,34 @@ import io.reactivex.disposables.Disposable
  * @Date: 2021/02/04
  * @Version: v1.0
  */
-class RequestCancelable<T>(callback: RequestCallback<T>) : Observer<T> {
-    private val callback = callback
-    private var cancel = false
+class ObserverCancelableTask<T>(private var callback: RequestCallback<T>) : AbsCancelableTask(),
+        Observer<T> {
     private lateinit var disposable: Disposable
 
-    fun cancel() {
-        if (cancel) {
-            return
-        }
-
-        cancel = true
+    override fun doCancel() {
         if (!disposable.isDisposed) {
             disposable.dispose()
         }
     }
 
-    fun isCancel(): Boolean {
-        return cancel
-    }
-
     override fun onSubscribe(d: Disposable) {
-        Log.d("roy", "onSubscribe 执行")
+        Log.d("roy", "执行了onSubscribe")
         this.disposable = d
     }
 
     override fun onNext(t: T) {
-        Log.d("roy", "onNext 执行")
+        Log.d("roy", "执行了onNext")
+        val statisticsEvent = StatisticsEvent(taskId())
+        statisticsEvent.setType(StatisticsEvent.SUCCESS)
+        postEvent(statisticsEvent)
         callback.success(t)
     }
 
     override fun onError(e: Throwable) {
-        Log.d("roy", "onError 执行")
+        Log.d("roy", "执行了onError")
+        val statisticsEvent = StatisticsEvent(taskId())
+        statisticsEvent.setType(StatisticsEvent.FAIL)
+        postEvent(statisticsEvent)
         var msg = e.message
         if (msg != null) {
             callback.fail(-1, msg)
@@ -51,6 +48,7 @@ class RequestCancelable<T>(callback: RequestCallback<T>) : Observer<T> {
     }
 
     override fun onComplete() {
+        Log.d("roy", "执行了onComplete")
     }
 
 }

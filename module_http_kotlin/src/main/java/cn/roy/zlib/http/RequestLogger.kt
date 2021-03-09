@@ -8,6 +8,9 @@ package cn.roy.zlib.http
  */
 interface RequestLogger {
 
+    /**
+     * 打印日志信息
+     */
     fun print(log:String)
 
 }

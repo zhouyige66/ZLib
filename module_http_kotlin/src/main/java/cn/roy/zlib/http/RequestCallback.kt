@@ -8,8 +8,14 @@ package cn.roy.zlib.http
  */
 interface RequestCallback<Result> {
 
+    /**
+     * 成功回调
+     */
     fun success(result:Result)
 
+    /**
+     * 失败回调
+     */
     fun fail(code:Int,msg:String)
 
 }
