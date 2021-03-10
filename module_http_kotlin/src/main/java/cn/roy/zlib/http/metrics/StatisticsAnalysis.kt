@@ -10,43 +10,34 @@ import java.util.concurrent.Semaphore
  * @Version: v1.0
  */
 class StatisticsAnalysis private constructor() {
-    private val eventContainer: ConcurrentLinkedQueue<StatisticsEvent> =
+    private var statisticEventContainer: ConcurrentLinkedQueue<StatisticsEvent> =
             ConcurrentLinkedQueue()
-    private val costEventContainer: ConcurrentLinkedQueue<RequestCostEvent> =
+    private val analysisEventContainer: ConcurrentLinkedQueue<AnalysisEvent> =
             ConcurrentLinkedQueue()
     private val statisticsLock = Semaphore(0)
     private val analysisLock = Object()
     private var isStatisticsStart = false
     private var isAnalysisStart = false
+    private var isStop = false
     private val statistician = Thread {
-        while (true) {
+        while (!isStop) {
             try {
                 statisticsLock.acquire()
             } catch (e: InterruptedException) {
                 e.printStackTrace()
             }
-            val poll = eventContainer.poll()
+            val poll = statisticEventContainer.poll()
             if (poll != null) {
-                // 模拟数据处理
-                try {
-                    Thread.sleep(1000)
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
-                }
+                RequestMetrics.instance.statistics(poll)
             }
         }
     }
     private val assayer = Thread {
-        while (true) {
+        while (!isStop) {
             synchronized(analysisLock) {
-                val poll = costEventContainer.poll()
+                val poll = analysisEventContainer.poll()
                 if (poll != null) {
-                    // 模拟数据处理
-                    try {
-                        Thread.sleep(1000)
-                    } catch (e: InterruptedException) {
-                        e.printStackTrace()
-                    }
+                    RequestMetrics.instance.analysisRequest(poll)
                 } else {
                     // 等待被唤醒
                     try {
@@ -65,24 +56,38 @@ class StatisticsAnalysis private constructor() {
         }
     }
 
-    fun post(event: StatisticsEvent) {
-        eventContainer.add(event)
+    fun statistics(event: StatisticsEvent) {
+        if (isStop) {
+            return
+        }
+        statisticEventContainer.add(event)
         if (!isStatisticsStart) {
             isStatisticsStart = true
             statistician.start()
         }
+        // 释放一个许可
         statisticsLock.release()
     }
 
-    fun analysis(event: RequestCostEvent) {
-        costEventContainer.add(event)
+    fun analysis(event: AnalysisEvent) {
+        if (isStop) {
+            return
+        }
+        analysisEventContainer.add(event)
         if (!isAnalysisStart) {
             isAnalysisStart = true
             assayer.start()
         }
+        // 通知线程进行处理
         synchronized(analysisLock) {
             analysisLock.notify()
         }
+    }
+
+    fun release() {
+        isStop = true
+        statisticEventContainer.clear()
+        analysisEventContainer.clear()
     }
 
 }

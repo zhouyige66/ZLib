@@ -1,7 +1,7 @@
 package cn.roy.zlib.http
 
 import android.util.Log
-import cn.roy.zlib.http.metrics.RequestCostEvent
+import cn.roy.zlib.http.metrics.AnalysisEvent
 import cn.roy.zlib.http.metrics.StatisticsAnalysis
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -87,7 +87,7 @@ object RetrofitFactory {
             val response = chain.proceed(chain.request())
             var cost = System.currentTimeMillis() - timestamp
             // 分析统计
-            val requestCostEvent = RequestCostEvent(uri.toString(), cost)
+            val requestCostEvent = AnalysisEvent(uri.toString(), cost)
             StatisticsAnalysis.instance.analysis(requestCostEvent)
             configurator.logger().print("<-- 访问：${uri}，请求总耗时：${cost} (ms)-->")
             response

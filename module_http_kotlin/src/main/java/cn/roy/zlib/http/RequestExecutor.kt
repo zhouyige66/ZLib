@@ -20,7 +20,7 @@ object RequestExecutor {
         val cancelable = ObserverCancelableTask(callback)
         val statisticsEvent = StatisticsEvent(cancelable.taskId())
         statisticsEvent.setType(StatisticsEvent.INIT)
-        StatisticsAnalysis.instance.post(statisticsEvent)
+        StatisticsAnalysis.instance.statistics(statisticsEvent)
         observable.subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -33,7 +33,7 @@ object RequestExecutor {
         val cancelable = CallCancelableTask(call, callback)
         val statisticsEvent = StatisticsEvent(cancelable.taskId())
         statisticsEvent.setType(StatisticsEvent.INIT)
-        StatisticsAnalysis.instance.post(statisticsEvent)
+        StatisticsAnalysis.instance.statistics(statisticsEvent)
         call.enqueue(cancelable)
         return cancelable
     }

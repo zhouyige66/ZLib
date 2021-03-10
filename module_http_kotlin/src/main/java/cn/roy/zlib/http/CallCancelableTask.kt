@@ -12,13 +12,16 @@ import retrofit2.Response
  * @Version: v1.0
  */
 class CallCancelableTask<T>(private var call: Call<T>, private val callback: RequestCallback<T>) :
-        AbsCancelableTask(),Callback<T> {
+        AbsCancelableTask(), Callback<T> {
 
     override fun doCancel() {
-        call.cancel()
+        if (!call.isCanceled) {
+            call.cancel()
+        }
     }
 
     override fun onResponse(call: Call<T>, response: Response<T>) {
+        isComplete = true
         val statisticsEvent = StatisticsEvent(taskId())
         statisticsEvent.setType(StatisticsEvent.SUCCESS)
         postEvent(statisticsEvent)
@@ -26,6 +29,7 @@ class CallCancelableTask<T>(private var call: Call<T>, private val callback: Req
     }
 
     override fun onFailure(call: Call<T>, t: Throwable) {
+        isComplete = true
         val statisticsEvent = StatisticsEvent(taskId())
         statisticsEvent.setType(StatisticsEvent.FAIL)
         postEvent(statisticsEvent)

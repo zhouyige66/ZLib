@@ -28,6 +28,7 @@ class ObserverCancelableTask<T>(private var callback: RequestCallback<T>) : AbsC
 
     override fun onNext(t: T) {
         Log.d("roy", "执行了onNext")
+        isComplete = true
         val statisticsEvent = StatisticsEvent(taskId())
         statisticsEvent.setType(StatisticsEvent.SUCCESS)
         postEvent(statisticsEvent)
@@ -36,6 +37,7 @@ class ObserverCancelableTask<T>(private var callback: RequestCallback<T>) : AbsC
 
     override fun onError(e: Throwable) {
         Log.d("roy", "执行了onError")
+        isComplete = true
         val statisticsEvent = StatisticsEvent(taskId())
         statisticsEvent.setType(StatisticsEvent.FAIL)
         postEvent(statisticsEvent)

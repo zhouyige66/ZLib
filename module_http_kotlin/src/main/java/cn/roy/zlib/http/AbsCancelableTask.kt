@@ -12,15 +12,15 @@ import java.util.*
  */
 abstract class AbsCancelableTask : CancelableTask {
     private var id: String = UUID.randomUUID().toString()
-
     private var cancel = false
+    var isComplete = false
 
     override fun taskId(): String {
         return id
     }
 
     override fun cancel() {
-        if (cancel) {
+        if (cancel || isComplete) {
             return
         }
 
@@ -35,9 +35,8 @@ abstract class AbsCancelableTask : CancelableTask {
         return cancel
     }
 
-    fun postEvent(event: StatisticsEvent){
-
-        StatisticsAnalysis.instance.post(event)
+    fun postEvent(event: StatisticsEvent) {
+        StatisticsAnalysis.instance.statistics(event)
     }
 
     abstract fun doCancel()

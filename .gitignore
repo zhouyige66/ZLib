@@ -9,6 +9,6 @@ captures/
 /local.properties
 
 # 忽略模块
-app
-module_common
+#app
+#module_common
 

@@ -9,8 +9,6 @@ import androidx.annotation.IntDef
  * @Version: v1.0
  */
 class StatisticsEvent(taskId: String) {
-    private var id = taskId
-
     companion object {
         const val INIT = 0x0
         const val CANCEL = 0x1
