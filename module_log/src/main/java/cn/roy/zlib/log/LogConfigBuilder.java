@@ -1,7 +1,6 @@
 package cn.roy.zlib.log;
 
 import android.content.Context;
-import android.os.Environment;
 import android.text.TextUtils;
 
 import org.slf4j.LoggerFactory;
@@ -66,22 +65,12 @@ public class LogConfigBuilder {
     public void buildDefault() {
         setLogcatAppenderProp(Level.DEBUG, FileAppenderProperty.PATTERN_DEFAULT);
         configLogcatAppender();
-
-        String storagePath = Environment.getDataDirectory().getAbsolutePath();
-        boolean granted = AndroidStorageUtil.isStoragePermissionGranted(context);
-        if (AndroidStorageUtil.isExternalStorageAvailable() && granted) {
-            storagePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-            storagePath = storagePath.concat(File.separator).concat(context.getPackageName());
-        }
         // 日志文件夹
-        String logFilePath = storagePath.concat(File.separator).concat("log/log.txt");
+        String externalFilesDir = AndroidStorageUtil.getExternalFilesDir(context);
+        String logFilePath = externalFilesDir.concat(File.separator).concat("log/log.txt");
         String fileNamePattern = logFilePath + File.separator + "log_%d{yyyy-MM-dd}@%i.txt";
-        // 读取手机存储
-        long internalTotalSize = AndroidStorageUtil.getInternalTotalSize();
-        long sdCardTotalSize = AndroidStorageUtil.getSDCardTotalSize();
-        long max = Math.max(internalTotalSize, sdCardTotalSize);
-        // 存储文件总大小为存储的1/10;
-        long totalFileSize = max / 20;
+        // 存储文件总大小1G
+        long totalFileSize = 1024 * 1024 * 1024;
         // 单个文件最大10M
         long singleFileSize = 1024 * 1024 * 10;
         // 默认保存最大天数为7
@@ -93,7 +82,7 @@ public class LogConfigBuilder {
                 .setTotalFileSize(totalFileSize)
                 .setMaxHistory(maxHistory)
                 .build();
-        rootLogger.addAppender(FileAppenderFactory.create(loggerContext, prop,true));
+        rootLogger.addAppender(FileAppenderFactory.create(loggerContext, prop, true));
     }
 
     private void configLogcatAppender() {

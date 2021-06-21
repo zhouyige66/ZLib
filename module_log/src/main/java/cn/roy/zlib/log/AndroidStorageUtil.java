@@ -1,6 +1,7 @@
 package cn.roy.zlib.log;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -9,6 +10,7 @@ import android.os.Environment;
 import android.os.StatFs;
 import android.os.storage.StorageManager;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 
@@ -24,6 +26,7 @@ import java.lang.reflect.Method;
  * @Version: v1.0
  */
 public class AndroidStorageUtil {
+    public static final int CODE_APPLY_STORAGE_PERMISSION = 98760;
 
     /**
      * 判断存储权限是否已经被授予
@@ -62,12 +65,25 @@ public class AndroidStorageUtil {
     }
 
     /**
+     * 申请存储权限
+     *
+     * @param activity
+     */
+    public static void applyStoragePermission(Activity activity) {
+        String[] permissions = {
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        };
+        ActivityCompat.requestPermissions(activity, permissions, CODE_APPLY_STORAGE_PERMISSION);
+    }
+
+    /**
      * 判断外置sd卡是否挂载
      *
      * @param mContext
      * @return
      */
-    public static boolean isStorageMounted(Context mContext) {
+    public static boolean isSDCardMounted(Context mContext) {
         boolean isMounted = false;
         StorageManager mStorageManager = (StorageManager)
                 mContext.getSystemService(Context.STORAGE_SERVICE);
@@ -86,7 +102,7 @@ public class AndroidStorageUtil {
                 boolean removable = (Boolean) isRemovable.invoke(storageVolumeElement);
                 String state = (String) getState.invoke(storageVolumeElement);
                 if (removable && state.equals(Environment.MEDIA_MOUNTED)) {
-                    isMounted = removable;
+                    isMounted = true;
                     break;
                 }
             }
@@ -104,6 +120,19 @@ public class AndroidStorageUtil {
     }
 
     /**
+     * 获取SDCard根路径
+     *
+     * @return
+     */
+    public static String getSDCardDir() {
+        if (isExternalStorageAvailable()) {
+            return Environment.getExternalStorageDirectory().getAbsolutePath();
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * 检测外部存储（SD卡等）是否可读写
      *
      * @return
@@ -113,17 +142,25 @@ public class AndroidStorageUtil {
     }
 
     /**
-     * 获取存储路径
+     * 获取应用内部文件存储路径
      *
-     * @return 外部存储可用返回外部存储路径，否则返回用户data directory
+     * @return
      */
-    public static String getStoragePath() {
-        if (isExternalStorageAvailable()) {
-            return Environment.getExternalStorageDirectory().getAbsolutePath();
-        } else {
-            return Environment.getDataDirectory().getAbsolutePath();
-        }
+    public static String getInternalFilesDir(Context context) {
+        return context.getFilesDir().getAbsolutePath();
     }
+
+    /**
+     * 获取应用外部文件存储目录
+     *
+     * @param context
+     * @return
+     */
+    public static String getExternalFilesDir(Context context) {
+        return context.getExternalFilesDir(null).getAbsolutePath();
+    }
+
+    /**********TODO 功能：存储容量相关方法**********/
 
     /**
      * 获取内部存储容量（内部存储总容量-系统占用容量）

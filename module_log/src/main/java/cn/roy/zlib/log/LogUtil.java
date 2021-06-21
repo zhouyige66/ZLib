@@ -35,16 +35,31 @@ public class LogUtil {
         getLogger().debug(log);
     }
 
+    public static void d(String log, Throwable throwable) {
+        getLogger().debug(log, throwable);
+    }
+
     public static void i(String log) {
         getLogger().info(log);
+    }
+
+    public static void i(String log, Throwable throwable) {
+        getLogger().info(log, throwable);
     }
 
     public static void w(String log) {
         getLogger().warn(log);
     }
 
+    public static void w(String log, Throwable throwable) {
+        getLogger().warn(log, throwable);
+    }
+
     public static void e(String log) {
         getLogger().error(log);
     }
 
+    public static void e(String log, Throwable throwable) {
+        getLogger().error(log, throwable);
+    }
 }
