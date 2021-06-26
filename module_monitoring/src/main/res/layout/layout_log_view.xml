@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/shape_50000000_5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!--工具栏-->
+        <RelativeLayout
+            android:id="@+id/v_control"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:padding="5dp">
+
+            <ImageView
+                android:id="@+id/iv"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_log_logo" />
+
+            <TextView
+                android:id="@+id/tv_level"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/iv"
+                android:background="@drawable/shape_transparent_5dp"
+                android:drawableRight="@drawable/ic_log_spinner_dropdown"
+                android:drawablePadding="5dp"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:singleLine="true"
+                android:textColor="#fff"
+                android:textSize="12dp"
+                tools:text="Verbose" />
+
+            <TextView
+                android:id="@+id/tv_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/tv_level"
+                android:background="@drawable/shape_transparent_5dp"
+                android:drawableRight="@drawable/ic_log_spinner_dropdown"
+                android:drawablePadding="5dp"
+                android:gravity="center_vertical"
+                android:maxWidth="80dp"
+                android:padding="5dp"
+                android:singleLine="true"
+                android:textColor="#fff"
+                android:textSize="12dp"
+                tools:text="Tag" />
+
+            <ImageView
+                android:id="@+id/iv_clean"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/iv_expand"
+                android:background="@drawable/selector_transparent_3dp"
+                android:src="@drawable/ic_log_clean" />
+
+            <ImageView
+                android:id="@+id/iv_expand"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_toLeftOf="@+id/iv_close"
+                android:background="@drawable/selector_transparent_3dp"
+                android:src="@drawable/ic_log_shrink" />
+
+            <ImageView
+                android:id="@+id/iv_close"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/selector_transparent_3dp"
+                android:src="@drawable/ic_log_close" />
+        </RelativeLayout>
+
+        <!--日志区-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <!--筛选器-->
+    <LinearLayout
+        android:id="@+id/v_choose"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_50ffffff_5dp"
+        android:clickable="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:weightSum="3">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:background="@drawable/shape_424242_5dp"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <androidx.appcompat.widget.AppCompatCheckBox
+                android:id="@+id/cb_select_all"
+                style="@style/Style_CheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorTheme"
+                android:checked="true"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="全选"
+                android:textColor="@color/colorTheme"
+                android:textSize="12dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView_choose"
+                android:layout_width="200dp"
+                android:layout_height="160dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_confirm"
+                    android:layout_width="0dp"
+                    android:layout_height="28dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_f47139_40dp"
+                    android:text="确定"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12dp" />
+
+                <Button
+                    android:id="@+id/btn_cancel"
+                    android:layout_width="0dp"
+                    android:layout_height="28dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_ffffff_5dp"
+                    android:text="取消"
+                    android:textColor="#f47139"
+                    android:textSize="12dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

@@ -41,6 +41,8 @@ import cn.roy.zlib.monitor.ExceptionInfoLogger;
 import cn.roy.zlib.monitor.Monitor;
 import cn.roy.zlib.permission.PermissionGrantActivity;
 import cn.roy.zlib.permission.PermissionUtil;
+import cn.roy.zlib.tool.MonitoringToolSDK;
+import cn.roy.zlib.tool.core.MonitoringTool;
 import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -105,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 LogUtil.d("最近访问请求：" + url + "，该请求平均耗时：" + averageTime + "ms");
             }
         });
+
+        MonitoringToolSDK.init(new MonitoringToolSDK.Options(this).setMaxLogCount(50));
     }
 
     @Override
@@ -136,46 +140,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 requestPermission();
                 break;
             case R.id.button2:
-                Call<Result<JsonObject>> call = apiTest.getSessionId();
-                CancelableTask task = RequestExecutor.execute(call, new RequestCallback<Result<JsonObject>>() {
-                    @Override
-                    public void success(Result<JsonObject> jsonObjectResult) {
-                        LogUtil.d("" + jsonObjectResult.getCode());
-                    }
-
-                    @Override
-                    public void fail(int code, @NotNull String msg) {
-                        LogUtil.d(msg);
-                    }
-                });
+                MonitoringTool.d("roy", "点击了测试1");
+//                Call<Result<JsonObject>> call = apiTest.getSessionId();
+//                CancelableTask task = RequestExecutor.execute(call, new RequestCallback<Result<JsonObject>>() {
+//                    @Override
+//                    public void success(Result<JsonObject> jsonObjectResult) {
+//                        LogUtil.d("" + jsonObjectResult.getCode());
+//                    }
+//
+//                    @Override
+//                    public void fail(int code, @NotNull String msg) {
+//                        LogUtil.d(msg);
+//                    }
+//                });
                 break;
             case R.id.button3:
-                Observable<Result<User>> observable = apiTest.getUser();
-                RequestExecutor.execute(observable, new RequestCallback<Result<User>>() {
-                    @Override
-                    public void success(Result<User> user) {
-                        LogUtil.d("" + user.getCode());
-                    }
-
-                    @Override
-                    public void fail(int code, @NotNull String msg) {
-                        LogUtil.d(msg);
-                    }
-                });
+                MonitoringTool.i("kk20", "点击了测试1");
+//                Observable<Result<User>> observable = apiTest.getUser();
+//                RequestExecutor.execute(observable, new RequestCallback<Result<User>>() {
+//                    @Override
+//                    public void success(Result<User> user) {
+//                        LogUtil.d("" + user.getCode());
+//                    }
+//
+//                    @Override
+//                    public void fail(int code, @NotNull String msg) {
+//                        LogUtil.d(msg);
+//                    }
+//                });
                 break;
             case R.id.button4:
-                Debug.startMethodTracing();
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                Debug.stopMethodTracing();
+                MonitoringTool.e("zzy", "点击了测试1");
+//                Debug.startMethodTracing();
+//                try {
+//                    Thread.sleep(3000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                Debug.stopMethodTracing();
                 break;
             case R.id.button5:
-                int i = 0;
-                int k = 100 / i;
-                System.out.println("计算结果：" + k);
+                MonitoringTool.w("zhou", "点击测试");
+//                int i = 0;
+//                int k = 100 / i;
+//                System.out.println("计算结果：" + k);
                 break;
             case R.id.button6:
                 singleModel();
