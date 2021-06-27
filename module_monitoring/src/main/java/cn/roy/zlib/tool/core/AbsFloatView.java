@@ -22,8 +22,7 @@ import androidx.annotation.LayoutRes;
  * @Version V1.0.0
  */
 public abstract class AbsFloatView {
-    public View view;
-
+    private View view;
     private GestureDetector gestureDetector;
     private Point point;
     private WindowManager.LayoutParams layoutParams;

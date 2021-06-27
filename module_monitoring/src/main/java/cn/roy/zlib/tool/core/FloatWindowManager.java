@@ -1,6 +1,7 @@
 package cn.roy.zlib.tool.core;
 
 import android.content.Context;
+import android.view.View;
 import android.view.WindowManager;
 
 /**
@@ -32,7 +33,7 @@ public class FloatWindowManager {
         return mWindowManager;
     }
 
-    public static void showFloatView(Context context, AbsFloatView floatView) {
+    public static void addFloatView(Context context, AbsFloatView floatView) {
         if (context == null || floatView == null) {
             return;
         }
@@ -43,7 +44,7 @@ public class FloatWindowManager {
         }
     }
 
-    public static void hideFloatView(Context context, AbsFloatView floatView) {
+    public static void removeFloatView(Context context, AbsFloatView floatView) {
         if (context == null || floatView == null) {
             return;
         }
@@ -51,6 +52,28 @@ public class FloatWindowManager {
         boolean isShow = floatView.getView().isShown();
         if (isShow) {
             getWindowManager(context).removeView(floatView.getView());
+        }
+    }
+
+    public static void showFloatView(Context context, AbsFloatView floatView) {
+        if (context == null || floatView == null) {
+            return;
+        }
+
+        boolean isShow = floatView.getView().isShown();
+        if (!isShow) {
+            floatView.getView().setVisibility(View.VISIBLE);
+        }
+    }
+
+    public static void hideFloatView(Context context, AbsFloatView floatView) {
+        if (context == null || floatView == null) {
+            return;
+        }
+
+        boolean isShow = floatView.getView().isShown();
+        if (isShow) {
+            floatView.getView().setVisibility(View.GONE);
         }
     }
 

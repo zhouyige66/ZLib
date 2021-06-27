@@ -10,10 +10,7 @@ import android.os.PowerManager;
 import android.text.TextUtils;
 import android.util.Log;
 
-import java.util.HashMap;
-
 import cn.roy.zlib.tool.bean.LogItemBean;
-import cn.roy.zlib.tool.core.AbsFloatView;
 import cn.roy.zlib.tool.core.FloatLogView;
 import cn.roy.zlib.tool.core.FloatWindowManager;
 
@@ -24,9 +21,6 @@ import cn.roy.zlib.tool.core.FloatWindowManager;
  * @Version V1.0.0
  */
 public class LogService extends Service {
-    public static final int LogViewId = 0;
-
-    private HashMap<Integer, AbsFloatView> floatViewContainer;
     private PowerManager.WakeLock wakeLock;
     private BroadcastReceiver mHomeListenerReceiver = new BroadcastReceiver() {
         final String SYSTEM_DIALOG_REASON_KEY = "reason";
@@ -53,13 +47,12 @@ public class LogService extends Service {
             }
         }
     };
+    private FloatLogView floatLogView;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        // 初始化
-        floatViewContainer = new HashMap<>();
         // 申请锁
         if (wakeLock == null) {
             PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -79,11 +72,17 @@ public class LogService extends Service {
         if (intent != null) {
             LogItemBean bean = intent.getParcelableExtra("data");
             if (bean != null) {
-                FloatLogView logView = (FloatLogView) showView(LogViewId);
-                logView.addLog(bean);
+                if (floatLogView == null) {
+                    floatLogView = new FloatLogView(this);
+                    floatLogView.setViewFocusable(false);
+                    int width = floatLogView.getDisplayPoint().x * 2 / 3;
+                    floatLogView.getLayoutParams().width = width;
+                    floatLogView.getLayoutParams().height = width * 4 / 3;
+                }
+                FloatWindowManager.addFloatView(getApplicationContext(), floatLogView);
+                floatLogView.addLog(bean);
             }
         }
-
         return super.onStartCommand(intent, START_FLAG_RETRY, startId);
     }
 
@@ -94,14 +93,9 @@ public class LogService extends Service {
         if (wakeLock != null) {
             wakeLock.release();
         }
-
-        if (floatViewContainer != null) {
-            for (Integer key : floatViewContainer.keySet()) {
-                hideView(key);
-            }
-            for (AbsFloatView floatView : floatViewContainer.values()) {
-                floatView = null;
-            }
+        if (floatLogView != null) {
+            FloatWindowManager.removeFloatView(getApplicationContext(), floatLogView);
+            floatLogView = null;
         }
         unregisterReceiver(mHomeListenerReceiver);
     }
@@ -130,42 +124,7 @@ public class LogService extends Service {
         if (TextUtils.isEmpty(msg)) {
             return;
         }
-        Log.i("kk20", msg);
-    }
-
-    private AbsFloatView initFloatView(int id) {
-        AbsFloatView commonFloatView = null;
-        switch (id) {
-            case LogViewId:
-                FloatLogView floatLogView = new FloatLogView(this);
-                floatLogView.setViewFocusable(false);
-                int width = floatLogView.getDisplayPoint().x * 2 / 3;
-                floatLogView.getLayoutParams().width = width;
-                floatLogView.getLayoutParams().height = width * 4 / 3;
-                commonFloatView = floatLogView;
-                break;
-            default:
-                break;
-        }
-        // 添加到floatViewContainer中
-        floatViewContainer.put(id, commonFloatView);
-        return commonFloatView;
-    }
-
-    private AbsFloatView showView(int id) {
-        AbsFloatView floatView = floatViewContainer.get(id);
-        if (floatView == null) {
-            floatView = initFloatView(id);
-        }
-        FloatWindowManager.showFloatView(getApplicationContext(), floatView);
-        return floatView;
-    }
-
-    private void hideView(int id) {
-        AbsFloatView floatView = floatViewContainer.get(id);
-        if (floatView != null) {
-            FloatWindowManager.hideFloatView(getApplicationContext(), floatView);
-        }
+        Log.d("kk20", msg);
     }
 
 }
