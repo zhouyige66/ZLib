@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shape_50000000_5dp">
+    android:background="@drawable/shape_90000000_5dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,14 +32,11 @@
                 android:layout_marginLeft="5dp"
                 android:layout_toRightOf="@+id/iv"
                 android:background="@drawable/shape_transparent_5dp"
-                android:drawableRight="@drawable/ic_log_spinner_dropdown"
-                android:drawablePadding="5dp"
                 android:gravity="center_vertical"
-                android:padding="5dp"
                 android:singleLine="true"
+                android:text="Levels"
                 android:textColor="#fff"
-                android:textSize="12dp"
-                tools:text="Verbose" />
+                android:textSize="12dp" />
 
             <TextView
                 android:id="@+id/tv_tag"
@@ -49,15 +46,12 @@
                 android:layout_marginLeft="5dp"
                 android:layout_toRightOf="@+id/tv_level"
                 android:background="@drawable/shape_transparent_5dp"
-                android:drawableRight="@drawable/ic_log_spinner_dropdown"
-                android:drawablePadding="5dp"
                 android:gravity="center_vertical"
                 android:maxWidth="80dp"
-                android:padding="5dp"
                 android:singleLine="true"
+                android:text="Tags"
                 android:textColor="#fff"
-                android:textSize="12dp"
-                tools:text="Tag" />
+                android:textSize="12dp" />
 
             <ImageView
                 android:id="@+id/iv_clean"
@@ -105,7 +99,7 @@
         android:clickable="true"
         android:gravity="center"
         android:orientation="horizontal"
-        android:visibility="visible"
+        android:visibility="gone"
         android:weightSum="3">
 
         <LinearLayout
@@ -117,11 +111,13 @@
             android:padding="5dp">
 
             <TextView
+                android:id="@+id/tv_filter_title"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:gravity="center"
                 android:text="请选择过滤等级"
-                android:textColor="#FFF" />
+                android:textColor="#FFF"
+                android:textSize="14dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView_choose"
@@ -143,29 +139,29 @@
                     android:checked="true"
                     android:text="全选"
                     android:textColor="@color/colorTheme"
-                    android:textSize="12dp" />
+                    android:textSize="10dp" />
 
                 <Button
                     android:id="@+id/btn_confirm"
                     android:layout_width="0dp"
-                    android:layout_height="28dp"
-                    android:layout_marginLeft="8dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="4dp"
                     android:layout_weight="1"
                     android:background="@drawable/selector_f47139_40dp"
                     android:text="确定"
                     android:textColor="#FFFFFF"
-                    android:textSize="12dp" />
+                    android:textSize="10dp" />
 
                 <Button
                     android:id="@+id/btn_cancel"
                     android:layout_width="0dp"
-                    android:layout_height="28dp"
-                    android:layout_marginLeft="8dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="4dp"
                     android:layout_weight="1"
                     android:background="@drawable/selector_ffffff_5dp"
                     android:text="取消"
                     android:textColor="#f47139"
-                    android:textSize="12dp" />
+                    android:textSize="10dp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
