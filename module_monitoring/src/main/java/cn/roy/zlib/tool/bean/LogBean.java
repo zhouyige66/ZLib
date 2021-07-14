@@ -9,7 +9,7 @@ import android.os.Parcelable;
  * @Date 2018/4/16
  * @Version V1.0.0
  */
-public class LogItemBean implements Parcelable {
+public class LogBean implements Parcelable {
     public static final int VERBOSE = 0;
     public static final int DEBUG = 1;
     public static final int INFO = 2;
@@ -21,7 +21,7 @@ public class LogItemBean implements Parcelable {
     private String logText;
     private long date;
 
-    public LogItemBean(int logLevel, String logTag, String logText) {
+    public LogBean(int logLevel, String logTag, String logText) {
         this.logLevel = logLevel;
         this.logTag = logTag;
         this.logText = logText;
@@ -95,22 +95,22 @@ public class LogItemBean implements Parcelable {
         dest.writeLong(this.date);
     }
 
-    protected LogItemBean(Parcel in) {
+    protected LogBean(Parcel in) {
         this.logLevel = in.readInt();
         this.logTag = in.readString();
         this.logText = in.readString();
         this.date = in.readLong();
     }
 
-    public static final Creator<LogItemBean> CREATOR = new Creator<LogItemBean>() {
+    public static final Creator<LogBean> CREATOR = new Creator<LogBean>() {
         @Override
-        public LogItemBean createFromParcel(Parcel source) {
-            return new LogItemBean(source);
+        public LogBean createFromParcel(Parcel source) {
+            return new LogBean(source);
         }
 
         @Override
-        public LogItemBean[] newArray(int size) {
-            return new LogItemBean[size];
+        public LogBean[] newArray(int size) {
+            return new LogBean[size];
         }
     };
 }

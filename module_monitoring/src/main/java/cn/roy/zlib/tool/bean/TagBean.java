@@ -10,5 +10,5 @@ import java.util.List;
  */
 public class TagBean {
     public String tagName;
-    public List<LogItemBean> logItemBeanList;
+    public List<LogBean> logBeanList;
 }

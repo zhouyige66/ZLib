@@ -34,7 +34,7 @@ import cn.roy.zlib.tool.util.AppOpsManagerUtil;
  * @Date 2018/5/1
  * @Version V1.0.0
  */
-public class  AlertWindowPermissionGrantActivity extends Activity {
+public class ApplyAlertWindowPermissionActivity extends Activity {
     private static final int OVERLAYS_CODE = 10001;
 
     private View viewGrant;

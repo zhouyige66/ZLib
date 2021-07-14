@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import cn.roy.zlib.tool.bean.LogItemBean;
+import cn.roy.zlib.tool.bean.LogBean;
 import cn.roy.zlib.tool.bean.TagBean;
-import cn.roy.zlib.tool.component.AlertWindowPermissionGrantActivity;
+import cn.roy.zlib.tool.component.ApplyAlertWindowPermissionActivity;
 import cn.roy.zlib.tool.component.LogService;
 import cn.roy.zlib.tool.util.AppOpsManagerUtil;
 
@@ -25,7 +25,7 @@ import cn.roy.zlib.tool.util.AppOpsManagerUtil;
 public final class Recorder {
     private Context appContext;
     private int maxLogItemCount = 1000;// 默认日志容器存储最大值
-    private List<LogItemBean> originData;
+    private List<LogBean> originData;
     private Map<String, TagBean> tagBeanMap;
     private Map<Integer, Set<String>> levelTagMap;
     private boolean hasRequestDrawOverlaysPermission = false;
@@ -72,50 +72,50 @@ public final class Recorder {
         return tags;
     }
 
-    public List<LogItemBean> getLogList(Set<Integer> levels, Set<String> tags) {
-        List<LogItemBean> logItemBeans = new ArrayList<>();
+    public List<LogBean> getLogList(Set<Integer> levels, Set<String> tags) {
+        List<LogBean> logBeans = new ArrayList<>();
         for (String tag : tags) {
             TagBean tagBean = tagBeanMap.get(tag);
             if (tagBean != null) {
-                List<LogItemBean> logItemBeanList = tagBean.logItemBeanList;
-                if (!logItemBeanList.isEmpty()) {
-                    for (LogItemBean bean : logItemBeanList) {
+                List<LogBean> logBeanList = tagBean.logBeanList;
+                if (!logBeanList.isEmpty()) {
+                    for (LogBean bean : logBeanList) {
                         if (levels.contains(bean.getLogLevel())) {
-                            logItemBeans.add(bean);
+                            logBeans.add(bean);
                         }
                     }
                 }
             }
         }
-        return logItemBeans;
+        return logBeans;
     }
 
-    public List<LogItemBean> getAllLogList() {
+    public List<LogBean> getAllLogList() {
         return new ArrayList<>(originData);
     }
 
     /**
      * 添加日志到容器中
      *
-     * @param logItemBean
+     * @param logBean
      */
-    public void addLog(LogItemBean logItemBean) {
-        originData.add(logItemBean);
+    public void addLog(LogBean logBean) {
+        originData.add(logBean);
         int size = originData.size();
         if (size > maxLogItemCount) {
             int removeSize = size - maxLogItemCount + 1;
-            List<LogItemBean> removeLogItemBeans = originData.subList(0, removeSize);
-            for (LogItemBean item : removeLogItemBeans) {
+            List<LogBean> removeLogBeans = originData.subList(0, removeSize);
+            for (LogBean item : removeLogBeans) {
                 int logLevel = item.getLogLevel();
                 String logTag = item.getLogTag();
                 // 从相应的标签列表中移除
                 TagBean tagBean = tagBeanMap.get(logTag);
                 if (tagBean != null) {
-                    List<LogItemBean> logItemBeanList = tagBean.logItemBeanList;
-                    if (!logItemBeanList.isEmpty()) {
-                        logItemBeanList.remove(item);
+                    List<LogBean> logBeanList = tagBean.logBeanList;
+                    if (!logBeanList.isEmpty()) {
+                        logBeanList.remove(item);
                     }
-                    if (logItemBeanList.isEmpty()) {
+                    if (logBeanList.isEmpty()) {
                         tagBeanMap.remove(logTag);
                     }
                 }
@@ -127,21 +127,21 @@ public final class Recorder {
                     }
                 }
             }
-            originData.removeAll(removeLogItemBeans);
+            originData.removeAll(removeLogBeans);
         }
 
-        String logTag = logItemBean.getLogTag();
-        int logLevel = logItemBean.getLogLevel();
+        String logTag = logBean.getLogTag();
+        int logLevel = logBean.getLogLevel();
         // 维护tagBeanMap
         TagBean tagBean = tagBeanMap.get(logTag);
         if (tagBean != null) {
-            List<LogItemBean> logItemBeanList = tagBean.logItemBeanList;
-            logItemBeanList.add(logItemBean);
+            List<LogBean> logBeanList = tagBean.logBeanList;
+            logBeanList.add(logBean);
         } else {
             tagBean = new TagBean();
             tagBean.tagName = logTag;
-            tagBean.logItemBeanList = new ArrayList<>();
-            tagBean.logItemBeanList.add(logItemBean);
+            tagBean.logBeanList = new ArrayList<>();
+            tagBean.logBeanList.add(logBean);
             tagBeanMap.put(logTag, tagBean);
         }
         // 维护levelTagMap
@@ -160,7 +160,7 @@ public final class Recorder {
                 return;
             }
             hasRequestDrawOverlaysPermission = true;
-            Intent i = new Intent(appContext, AlertWindowPermissionGrantActivity.class);
+            Intent i = new Intent(appContext, ApplyAlertWindowPermissionActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             appContext.startActivity(i);
             return;
@@ -168,7 +168,7 @@ public final class Recorder {
         hasRequestDrawOverlaysPermission = true;
         // 构建日志实体，显示在悬浮窗口
         Intent intent = new Intent(appContext, LogService.class);
-        intent.putExtra("data", logItemBean);
+        intent.putExtra("data", logBean);
         appContext.startService(intent);
     }
 

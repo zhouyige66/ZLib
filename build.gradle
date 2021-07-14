@@ -16,7 +16,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.2'
+        classpath 'com.android.tools.build:gradle:4.2.2'
         // 发布库到jit pack需要配置
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
         // kotlin支持

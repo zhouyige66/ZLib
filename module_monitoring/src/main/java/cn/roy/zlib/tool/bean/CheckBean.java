@@ -6,11 +6,11 @@ package cn.roy.zlib.tool.bean;
  * @Date: 2020/4/6 19:45
  * @Version: v1.0
  */
-public class CheckedItem {
+public class CheckBean {
     private boolean checked = false;
     private String itemText;
 
-    public CheckedItem(String itemText) {
+    public CheckBean(String itemText) {
         this.itemText = itemText;
     }
 

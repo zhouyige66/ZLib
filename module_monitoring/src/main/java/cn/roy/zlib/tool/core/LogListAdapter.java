@@ -10,7 +10,7 @@ import java.util.Locale;
 import cn.roy.zlib.tool.R;
 import cn.roy.zlib.tool.adapter.CommonAdapter;
 import cn.roy.zlib.tool.adapter.base.ViewHolder;
-import cn.roy.zlib.tool.bean.LogItemBean;
+import cn.roy.zlib.tool.bean.LogBean;
 
 /**
  * @Description 日志适配器
@@ -18,20 +18,20 @@ import cn.roy.zlib.tool.bean.LogItemBean;
  * @Date 2018/4/16
  * @Version V1.0.0
  */
-public class LogListAdapter extends CommonAdapter<LogItemBean> {
+public class LogListAdapter extends CommonAdapter<LogBean> {
     private SimpleDateFormat simpleDateFormat;
 
     private static final int[] colors = {R.color.colorLogVerbose, R.color.colorLogDebug,
             R.color.colorLogInfo, R.color.colorLogWarn, R.color.colorLogError};
 
-    public LogListAdapter(Context context, List<LogItemBean> datas) {
+    public LogListAdapter(Context context, List<LogBean> datas) {
         super(context, R.layout.item_log_detail, datas);
 
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
     }
 
     @Override
-    protected void convert(ViewHolder viewHolder, LogItemBean bean, int i) {
+    protected void convert(ViewHolder viewHolder, LogBean bean, int i) {
         TextView tvTag = viewHolder.getView(R.id.tv_tag);
         TextView tvLog = viewHolder.getView(R.id.tv_log);
         int type = bean.getLogLevel();

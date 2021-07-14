@@ -12,7 +12,7 @@
         android:supportsRtl="true">
 
         <activity
-            android:name="cn.roy.zlib.tool.component.AlertWindowPermissionGrantActivity"
+            android:name="cn.roy.zlib.tool.component.ApplyAlertWindowPermissionActivity"
             android:launchMode="singleTask"
             android:theme="@style/StyleActivityTransparent" />
         <service android:name="cn.roy.zlib.tool.component.LogService" />

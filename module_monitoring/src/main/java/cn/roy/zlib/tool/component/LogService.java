@@ -10,8 +10,8 @@ import android.os.PowerManager;
 import android.text.TextUtils;
 import android.util.Log;
 
-import cn.roy.zlib.tool.bean.LogItemBean;
-import cn.roy.zlib.tool.core.FloatLogView;
+import cn.roy.zlib.tool.bean.LogBean;
+import cn.roy.zlib.tool.core.LogFloatView;
 import cn.roy.zlib.tool.core.FloatWindowManager;
 
 /**
@@ -47,7 +47,7 @@ public class LogService extends Service {
             }
         }
     };
-    private FloatLogView floatLogView;
+    private LogFloatView logFloatView;
 
     @Override
     public void onCreate() {
@@ -70,17 +70,17 @@ public class LogService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
-            LogItemBean bean = intent.getParcelableExtra("data");
+            LogBean bean = intent.getParcelableExtra("data");
             if (bean != null) {
-                if (floatLogView == null) {
-                    floatLogView = new FloatLogView(this);
-                    floatLogView.setViewFocusable(false);
-                    int width = floatLogView.getDisplayPoint().x * 2 / 3;
-                    floatLogView.getLayoutParams().width = width;
-                    floatLogView.getLayoutParams().height = width * 4 / 3;
+                if (logFloatView == null) {
+                    logFloatView = new LogFloatView(this);
+                    logFloatView.setViewFocusable(false);
+                    int width = logFloatView.getDisplayPoint().x * 2 / 3;
+                    logFloatView.getLayoutParams().width = width;
+                    logFloatView.getLayoutParams().height = width * 4 / 3;
                 }
-                FloatWindowManager.addFloatView(getApplicationContext(), floatLogView);
-                floatLogView.addLog(bean);
+                FloatWindowManager.addFloatView(getApplicationContext(), logFloatView);
+                logFloatView.addLog(bean);
             }
         }
         return super.onStartCommand(intent, START_FLAG_RETRY, startId);
@@ -93,9 +93,9 @@ public class LogService extends Service {
         if (wakeLock != null) {
             wakeLock.release();
         }
-        if (floatLogView != null) {
-            FloatWindowManager.removeFloatView(getApplicationContext(), floatLogView);
-            floatLogView = null;
+        if (logFloatView != null) {
+            FloatWindowManager.removeFloatView(getApplicationContext(), logFloatView);
+            logFloatView = null;
         }
         unregisterReceiver(mHomeListenerReceiver);
     }

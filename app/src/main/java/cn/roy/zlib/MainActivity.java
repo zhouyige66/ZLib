@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Environment;
 import android.os.Trace;
 import android.view.View;
@@ -14,8 +13,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.gson.JsonObject;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -24,15 +21,10 @@ import java.util.List;
 import java.util.Random;
 
 import ch.qos.logback.classic.Level;
-import cn.roy.zlib.http.CancelableTask;
-import cn.roy.zlib.http.RequestCallback;
-import cn.roy.zlib.http.RequestExecutor;
 import cn.roy.zlib.http.RetrofitFactory;
 import cn.roy.zlib.http.metrics.RequestMetrics;
 import cn.roy.zlib.http.metrics.RequestMetricsListener;
 import cn.roy.zlib.httptest.APITest;
-import cn.roy.zlib.httptest.Result;
-import cn.roy.zlib.httptest.User;
 import cn.roy.zlib.log.AndroidStorageUtil;
 import cn.roy.zlib.log.FileAppenderProperty;
 import cn.roy.zlib.log.LogConfigBuilder;
@@ -42,9 +34,7 @@ import cn.roy.zlib.monitor.Monitor;
 import cn.roy.zlib.permission.PermissionGrantActivity;
 import cn.roy.zlib.permission.PermissionUtil;
 import cn.roy.zlib.tool.MonitoringToolSDK;
-import cn.roy.zlib.tool.core.MonitoringTool;
-import io.reactivex.Observable;
-import retrofit2.Call;
+import cn.roy.zlib.tool.MonitoringTool;
 import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
