@@ -7,11 +7,11 @@ package cn.roy.zlib.tool.bean;
  * @Version: v1.0
  */
 public class CheckBean {
+    private String text;
     private boolean checked = false;
-    private String itemText;
 
-    public CheckBean(String itemText) {
-        this.itemText = itemText;
+    public CheckBean(String text) {
+        this.text = text;
     }
 
     public boolean isChecked() {
@@ -22,11 +22,11 @@ public class CheckBean {
         this.checked = checked;
     }
 
-    public String getItemText() {
-        return itemText;
+    public String getText() {
+        return text;
     }
 
-    public void setItemText(String itemText) {
-        this.itemText = itemText;
+    public void setText(String text) {
+        this.text = text;
     }
 }

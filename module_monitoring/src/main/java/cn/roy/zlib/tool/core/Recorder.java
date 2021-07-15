@@ -3,6 +3,8 @@ package cn.roy.zlib.tool.core;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.IntRange;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,8 +63,8 @@ public final class Recorder {
         this.maxLogItemCount = maxLogItemCount;
     }
 
-    public List<String> getLogTagList(Set<Integer> levels) {
-        List<String> tags = new ArrayList<>();
+    public Set<String> getLogTagList(Set<Integer> levels) {
+        Set<String> tags = new HashSet<>();
         for (Integer level : levels) {
             Set<String> tagSet = levelTagMap.get(level);
             if (tagSet != null && !tagSet.isEmpty()) {
@@ -70,6 +72,16 @@ public final class Recorder {
             }
         }
         return tags;
+    }
+
+    public List<LogBean> getLogListByLevels(Set<Integer> levels) {
+        List<LogBean> logBeans = new ArrayList<>();
+        for (LogBean bean : originData) {
+            if (levels.contains(bean.getLogLevel())) {
+                logBeans.add(bean);
+            }
+        }
+        return logBeans;
     }
 
     public List<LogBean> getLogList(Set<Integer> levels, Set<String> tags) {

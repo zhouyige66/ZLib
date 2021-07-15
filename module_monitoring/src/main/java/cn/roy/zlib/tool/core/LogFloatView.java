@@ -59,13 +59,12 @@ public class LogFloatView extends AbsFloatView implements View.OnClickListener {
 
     private List<CheckBean> levels;// 等级
     private List<CheckBean> tags;// 标签
-    private List<CheckBean> checkBeanList;// 筛选适配器数据
+    private List<CheckBean> filterDataList;// 筛选适配器数据
     private List<LogBean> logBeanList;// log适配器数据
     private Set<Integer> selectLevelSet;// 当前选中的显示等级
     private Set<String> selectTagSet;// 当前选中的显示标签
     private boolean isShowLevelFilter;// 是否是等级筛选
-    private boolean isSelectAll = true;// 是否全选
-    private boolean filterChanged = false;// 过滤条件是否变化
+    private boolean isSelectAllTag = true;// 是否全选
 
     public LogFloatView(Context context) {
         super(context, R.layout.layout_log_view);
@@ -109,22 +108,22 @@ public class LogFloatView extends AbsFloatView implements View.OnClickListener {
         recyclerView_choose.addItemDecoration(new DividerItemDecoration(view.getContext(),
                 DividerItemDecoration.VERTICAL));
         filterAdapter = new CommonAdapter<CheckBean>(view.getContext(),
-                R.layout.item_log_level_tag, checkBeanList) {
+                R.layout.item_log_level_tag, filterDataList) {
             @Override
             protected void convert(ViewHolder viewHolder, CheckBean checkBean, int position) {
                 CheckBox checkBox = viewHolder.getView(R.id.cb_level);
-                checkBox.setText(checkBean.getItemText());
+                checkBox.setText(checkBean.getText());
                 checkBox.setChecked(checkBean.isChecked());
                 checkBox.setTag(position);
                 checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                     int index = (int) buttonView.getTag();
-                    checkBeanList.get(index).setChecked(isChecked);
+                    filterDataList.get(index).setChecked(isChecked);
                     // 检查所有选项是否已全选
                     if (isChecked) {
                         boolean allSelected = true;
-                        int size = checkBeanList.size();
+                        int size = filterDataList.size();
                         for (int i1 = 0; i1 < size; i1++) {
-                            CheckBean item = checkBeanList.get(i1);
+                            CheckBean item = filterDataList.get(i1);
                             if (!item.isChecked()) {
                                 allSelected = false;
                                 break;
@@ -135,7 +134,7 @@ public class LogFloatView extends AbsFloatView implements View.OnClickListener {
                         cb_select_all.setChecked(false);
                     }
                     if (!isShowLevelFilter) {
-                        isSelectAll = cb_select_all.isChecked();
+                        isSelectAllTag = cb_select_all.isChecked();
                     }
                 });
             }
@@ -188,11 +187,13 @@ public class LogFloatView extends AbsFloatView implements View.OnClickListener {
             showLevelChoose();
         } else if (v == tv_tag) {// 标签过滤
             expand();
-            showTagChoose(false);
+            showTagChoose();
         } else if (v == iv_clean) {// 清空
             Recorder.getInstance().clear();
             logBeanList.clear();
             logListAdapter.notifyDataSetChanged();
+            tags.clear();
+            selectTagSet.clear();
         } else if (v == iv_expand) {// 折叠
             int flag = (int) v.getTag();
             if (flag == FLAG_SHRINK) {// 当前是收缩，变为展开
@@ -215,9 +216,9 @@ public class LogFloatView extends AbsFloatView implements View.OnClickListener {
             updateData();
         } else if (v == btn_cancel) {
             v_filter.setVisibility(View.GONE);
-            resetSelectData();
+            resetFilterData();
         } else if (v == cb_select_all) {
-            for (CheckBean item : checkBeanList) {
+            for (CheckBean item : filterDataList) {
                 item.setChecked(cb_select_all.isChecked());
             }
             new Handler().post(() -> filterAdapter.notifyDataSetChanged());
@@ -230,8 +231,9 @@ public class LogFloatView extends AbsFloatView implements View.OnClickListener {
         tags = new ArrayList<>();
         selectLevelSet = new HashSet<>();
         selectTagSet = new HashSet<>();
-        checkBeanList = new ArrayList<>();
+        filterDataList = new ArrayList<>();
         logBeanList = new ArrayList<>();
+        // 填充数据
         int index = 0;
         for (String level : levelArray) {
             CheckBean item = new CheckBean(level);
@@ -242,6 +244,17 @@ public class LogFloatView extends AbsFloatView implements View.OnClickListener {
         }
         // 添加所有记录
         logBeanList.addAll(Recorder.getInstance().getAllLogList());
+        setTags();
+    }
+
+    private void setTags() {
+        tags.clear();
+        for (String tag : Recorder.getInstance().getLogTagList(selectLevelSet)) {
+            CheckBean checkBean = new CheckBean(tag);
+            checkBean.setChecked(true);
+            tags.add(checkBean);
+            selectTagSet.add(tag);
+        }
     }
 
     private void expand() {
@@ -265,8 +278,8 @@ public class LogFloatView extends AbsFloatView implements View.OnClickListener {
         isShowLevelFilter = true;
         v_filter.setVisibility(View.VISIBLE);
         tv_filter_title.setText("请选择过滤等级");
-        checkBeanList.clear();
-        checkBeanList.addAll(levels);
+        filterDataList.clear();
+        filterDataList.addAll(levels);
         filterAdapter.notifyDataSetChanged();
         cb_select_all.setChecked(selectLevelSet.size() == levels.size());
         cb_select_all.setClickable(true);
@@ -274,36 +287,28 @@ public class LogFloatView extends AbsFloatView implements View.OnClickListener {
 
     /**
      * 显示标签过滤
-     *
-     * @param reloadData 重新加载数据（等级切换后，需要重新选择标签过滤）
      */
-    private void showTagChoose(boolean reloadData) {
+    private void showTagChoose() {
         isShowLevelFilter = false;
         v_filter.setVisibility(View.VISIBLE);
         tv_filter_title.setText("请选择过滤标签");
-        if (reloadData || isSelectAll) {// 默认全选
-            tags.clear();
-            for (String tag : Recorder.getInstance().getLogTagList(selectLevelSet)) {
-                CheckBean item = new CheckBean(tag);
-                item.setChecked(true);
-                tags.add(item);
-            }
-        }
-        checkBeanList.clear();
-        checkBeanList.addAll(tags);
+        filterDataList.clear();
+        filterDataList.addAll(tags);
         filterAdapter.notifyDataSetChanged();
         if (tags.isEmpty()) {// 默认全选
             cb_select_all.setClickable(false);
             cb_select_all.setChecked(true);
         } else {
             cb_select_all.setClickable(true);
-            cb_select_all.setChecked(isSelectAll);
+            cb_select_all.setChecked(isSelectAllTag);
         }
     }
 
-    private void resetSelectData() {
+    /**
+     * 重置过滤器数据
+     */
+    private void resetFilterData() {
         if (isShowLevelFilter) {
-            filterChanged = false;
             int index = 0;
             for (CheckBean item : levels) {
                 item.setChecked(selectLevelSet.contains(index));
@@ -311,15 +316,7 @@ public class LogFloatView extends AbsFloatView implements View.OnClickListener {
             }
         } else {
             for (CheckBean item : tags) {
-                item.setChecked(tags.contains(item.getItemText()));
-            }
-            // 当过滤等级改变了，标签过滤时点击了取消按钮，依然需要更改数据列表
-            if (filterChanged) {
-                filterChanged = false;
-                logBeanList.clear();
-                logBeanList.addAll(
-                        Recorder.getInstance().getLogList(selectLevelSet, selectTagSet));
-                logListAdapter.notifyDataSetChanged();
+                item.setChecked(selectTagSet.contains(item.getText()));
             }
         }
     }
@@ -327,10 +324,10 @@ public class LogFloatView extends AbsFloatView implements View.OnClickListener {
     private void updateData() {
         // 检查当前选项中是否至少选择一项
         boolean check = false;
-        if (checkBeanList.isEmpty()) {
+        if (filterDataList.isEmpty()) {
             check = true;
         } else {
-            for (CheckBean item : checkBeanList) {
+            for (CheckBean item : filterDataList) {
                 if (item.isChecked()) {
                     check = true;
                     break;
@@ -338,7 +335,7 @@ public class LogFloatView extends AbsFloatView implements View.OnClickListener {
             }
         }
         if (!check) {
-            if (isShowLevelFilter || !isSelectAll) {
+            if (isShowLevelFilter || !isSelectAllTag) {
                 // 至少选择一项
                 Toast.makeText(Recorder.getInstance().getAppContext(), "请至少选择一项",
                         Toast.LENGTH_SHORT).show();
@@ -356,26 +353,28 @@ public class LogFloatView extends AbsFloatView implements View.OnClickListener {
                 }
                 index++;
             }
+            // 判断是否切换Level
             if (!selectLevelSet.containsAll(list) || selectLevelSet.size() != list.size()) {
-                filterChanged = true;// 过滤等级变化
                 selectLevelSet.clear();
                 selectLevelSet.addAll(list);
-                // 显示选中等级下的tag
-                showTagChoose(true);
+                isSelectAllTag = true;
+                logBeanList.clear();
+                logBeanList.addAll(Recorder.getInstance().getLogListByLevels(selectLevelSet));
+                logListAdapter.notifyDataSetChanged();
+                // 更改标签列表
+                setTags();
             }
             return;
         }
-
-        List<String> list = new ArrayList<>();
+        Set<String> tempSet = new HashSet<>();
         for (CheckBean item : tags) {
             if (item.isChecked()) {
-                list.add(item.getItemText());
+                tempSet.add(item.getText());
             }
         }
-        if (!selectTagSet.containsAll(list) || selectTagSet.size() != list.size()) {
-            filterChanged = true;
+        if (!selectTagSet.containsAll(tempSet) || selectTagSet.size() != tempSet.size()) {
             selectTagSet.clear();
-            selectTagSet.addAll(list);
+            selectTagSet.addAll(tempSet);
             logBeanList.clear();
             logBeanList.addAll(
                     Recorder.getInstance().getLogList(selectLevelSet, selectTagSet));
@@ -387,13 +386,18 @@ public class LogFloatView extends AbsFloatView implements View.OnClickListener {
         int logLevel = bean.getLogLevel();
         String logTag = bean.getLogTag();
         if (selectLevelSet.contains(logLevel)) {
-            if (isSelectAll) {
+            if (isSelectAllTag) {
                 logBeanList.add(bean);
                 logListAdapter.notifyDataSetChanged();
-                selectTagSet.add(logTag);
+                boolean add = selectTagSet.add(logTag);
+                if (add) {
+                    CheckBean checkBean = new CheckBean(logTag);
+                    checkBean.setChecked(true);
+                    tags.add(checkBean);
+                }
                 return;
             }
-
+            // 判断是否显示
             if (selectTagSet.contains(logTag)) {
                 logBeanList.add(bean);
                 logListAdapter.notifyDataSetChanged();

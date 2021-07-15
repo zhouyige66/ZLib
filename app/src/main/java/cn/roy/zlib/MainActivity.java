@@ -214,6 +214,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void requestPermission() {
         if (hasPermission) {
+            MonitoringTool.v("roy", "已经获取权限");
             return;
         }
         PermissionGrantActivity.jump2PermissionGrantActivity(this, permissions);

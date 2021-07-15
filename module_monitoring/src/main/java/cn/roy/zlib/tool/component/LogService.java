@@ -78,8 +78,11 @@ public class LogService extends Service {
                     int width = logFloatView.getDisplayPoint().x * 2 / 3;
                     logFloatView.getLayoutParams().width = width;
                     logFloatView.getLayoutParams().height = width * 4 / 3;
+                    FloatWindowManager.addFloatView(getApplicationContext(), logFloatView);
+                }else {
+                    FloatWindowManager.showFloatView(getApplicationContext(),logFloatView);
                 }
-                FloatWindowManager.addFloatView(getApplicationContext(), logFloatView);
+
                 logFloatView.addLog(bean);
             }
         }
